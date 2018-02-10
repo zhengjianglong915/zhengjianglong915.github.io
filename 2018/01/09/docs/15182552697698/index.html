@@ -14,8 +14,19 @@
 
 
 
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2" rel="stylesheet">
 
 
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
 
 
 
@@ -42,6 +53,25 @@
   
   <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
 
 
 
@@ -79,18 +109,18 @@
 
 
 
-<meta name="description" content="本文主要讲解java测试框架 Mockito的工作原理">
+<meta name="description" content="本文主要讲解java测试框架 Mockito的工作原理.mocktio主要是使用代理模式来设计，mockitio采用byte buddy框架生成一个动态代理对象，为mock对象的每个方法都做了拦截。只要调用mock对象则会直接调用拦截器方法。">
 <meta name="keywords" content="Mockito">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mockito 原理解析">
 <meta property="og:url" content="http://yoursite.com/2018/01/09/docs/15182552697698/index.html">
 <meta property="og:site_name" content="入境繁华">
-<meta property="og:description" content="本文主要讲解java测试框架 Mockito的工作原理">
+<meta property="og:description" content="本文主要讲解java测试框架 Mockito的工作原理.mocktio主要是使用代理模式来设计，mockitio采用byte buddy框架生成一个动态代理对象，为mock对象的每个方法都做了拦截。只要调用mock对象则会直接调用拦截器方法。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-10T11:07:26.000Z">
+<meta property="og:updated_time" content="2018-02-10T12:13:35.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mockito 原理解析">
-<meta name="twitter:description" content="本文主要讲解java测试框架 Mockito的工作原理">
+<meta name="twitter:description" content="本文主要讲解java测试框架 Mockito的工作原理.mocktio主要是使用代理模式来设计，mockitio采用byte buddy框架生成一个动态代理对象，为mock对象的每个方法都做了拦截。只要调用mock对象则会直接调用拦截器方法。">
 
 
 
@@ -161,7 +191,7 @@
       </a>
     </div>
       
-        <p class="site-subtitle"></p>
+        <p class="site-subtitle">不积跬步无以至千里</p>
       
   </div>
 
@@ -217,26 +247,6 @@
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-schedule">
-          <a href="/schedule/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-calendar"></i> <br />
-            
-            日程表
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-sitemap">
-          <a href="/sitemap.xml" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-sitemap"></i> <br />
-            
-            站点地图
           </a>
         </li>
       
@@ -370,7 +380,8 @@
 
           
               <div class="post-description">
-                  本文主要讲解java测试框架 Mockito的工作原理
+               <!-- 本文主要讲解java测试框架 Mockito的工作原理.mocktio主要是使用代理模式来设计，mockitio采用byte buddy框架生成一个动态代理对象，为mock对象的每个方法都做了拦截。只要调用mock对象则会直接调用拦截器方法。 文章中删除 -->
+                 
               </div>
           
 
@@ -381,7 +392,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body han-init-context" itemprop="articleBody">
 
       
       
@@ -435,6 +446,24 @@
     
 
     
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    入境繁华
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://yoursite.com/2018/01/09/docs/15182552697698/" title="Mockito 原理解析">http://yoursite.com/2018/01/09/docs/15182552697698/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
 
     <footer class="post-footer">
       
@@ -449,6 +478,22 @@
       
       
 
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/02/22/docs/15182639770952/" rel="next" title="HashMap在并发情况下调用put的引起的死循环分析">
+                <i class="fa fa-chevron-left"></i> HashMap在并发情况下调用put的引起的死循环分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
       
 
       
@@ -542,7 +587,7 @@
                 alt="入境繁华" />
             
               <p class="site-author-name" itemprop="name">入境繁华</p>
-              <p class="site-description motion-element" itemprop="description"></p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -552,7 +597,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">28</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -563,7 +608,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -574,7 +619,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -618,6 +663,24 @@
           
 
           
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://luodw.cc/" title="罗道文的博客" target="_blank">罗道文的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://youbingchenyoubing.leanote.com/" title="陈友兵的博客" target="_blank">陈友兵的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
           
 
           
@@ -956,11 +1019,28 @@
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
 
   
   
 
   
+  
+
 
   
 
