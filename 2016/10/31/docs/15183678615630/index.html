@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="思考," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="之前老早就意识到写博客的重要性，但是在去实习以后就没有认真写过博客。反而友兵在博客这块积累很多，他在不同的渠道上都发表博客。现在他在蚂蚁笔记里积累很多资源，从c++底层到大数据学习框架，都做了认真细致的笔记。相反自己的学习笔记和博客则特别的少。从现在起应该好好写博客，一点点地积累，相信后面会有很大的改变。">
+<meta name="keywords" content="思考">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于写博客的一些思考">
+<meta property="og:url" content="http://zhengjianglong.cn/2016/10/31/docs/15183678615630/index.html">
+<meta property="og:site_name" content="入境繁华">
+<meta property="og:description" content="之前老早就意识到写博客的重要性，但是在去实习以后就没有认真写过博客。反而友兵在博客这块积累很多，他在不同的渠道上都发表博客。现在他在蚂蚁笔记里积累很多资源，从c++底层到大数据学习框架，都做了认真细致的笔记。相反自己的学习笔记和博客则特别的少。从现在起应该好好写博客，一点点地积累，相信后面会有很大的改变。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-11T16:58:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关于写博客的一些思考">
+<meta name="twitter:description" content="之前老早就意识到写博客的重要性，但是在去实习以后就没有认真写过博客。反而友兵在博客这块积累很多，他在不同的渠道上都发表博客。现在他在蚂蚁笔记里积累很多资源，从c++底层到大数据学习框架，都做了认真细致的笔记。相反自己的学习笔记和博客则特别的少。从现在起应该好好写博客，一点点地积累，相信后面会有很大的改变。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhengjianglong.cn/2016/10/31/docs/15183678615630/"/>
+
+
+
+
+
+  <title>关于写博客的一些思考 | 入境繁华</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">入境繁华</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">不积跬步无以至千里</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2016/10/31/docs/15183678615630/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关于写博客的一些思考</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-31T13:17:00+08:00">
+                2016-10-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/思考/" itemprop="url" rel="index">
+                    <span itemprop="name">思考</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/31/docs/15183678615630/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/31/docs/15183678615630/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/10/31/docs/15183678615630/" class="leancloud_visitors" data-flag-title="关于写博客的一些思考">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+               <!-- 之前老早就意识到写博客的重要性，但是在去实习以后就没有认真写过博客。反而友兵在博客这块积累很多，他在不同的渠道上都发表博客。现在他在蚂蚁笔记里积累很多资源，从c++底层到大数据学习框架，都做了认真细致的笔记。相反自己的学习笔记和博客则特别的少。从现在起应该好好写博客，一点点地积累，相信后面会有很大的改变。 文章中删除 -->
+                 
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="一、为什么要写博客"><a href="#一、为什么要写博客" class="headerlink" title="一、为什么要写博客"></a>一、为什么要写博客</h1><p>写博客是很费精力的一件事，经常为了写一篇博客花费很长一段时间。一篇博客想变成一篇优质的博客，中间还需要反复修改，在学习后不断对之前的认知纠正或文章的润色。但是还是很多人愿意花大部分时间去写博客，那是因为博客可以给我们带来很多好处。</p>
+<ol>
+<li><p><strong>对知识的梳理和总结，并找出自己的不足</strong>。<br>写博客最重要的一点就是将自己对知识的学习和理解进行总结，便于今后方便回顾。在这个过程可以将我们零散的知识结构变成一个系统的知识体系，做笔记、写博客的时候往往需要花费一些时间，研究表明投入时间越多、越麻烦的事情让你记忆更加深刻。在写博客的时候你也会发现有很多知识自己没有理解清楚，所以在这个过程就是找出自己理解不够深刻的地方再加强学习。</p>
+</li>
+<li><p><strong>加深对知识的理解</strong><br>在写的过程我们尝试用自己的语言去表述知识，这个过程就是将知识转换自己的东西，一个知识咀嚼消化的过程。学习有几个阶段：获取，理解，拓展，纠正，应用，记忆，测试。而写博客就是在理解、拓展、纠正和应用阶段进行强化。只有理解了知识本身才能才能用自己的语言表达出来；为了让其他人看得懂需要联系生活常识和其他知识来解释相关概念；在写的过程中会发现自己有一些地方没有理解清楚，这时候就需要进行再次学习纠正和弥补自己的不足；应用就是将自己理解的知识表示出来。</p>
+</li>
+<li><p><strong>锻炼自己的文字表达能力</strong><br>一篇好的博客就是要将知识用通俗易懂的方式展示出来，在写博客的过程就是在锻炼和提高自己文笔能力的过程。作为一个工科男生在文学方面涉猎很少，文字能力和表达能力在沟通上尤为重要，所以应该需要借助一些方式来提高我们自己的表达和书写能力。而博客就是一个最好的选择方式，可以将自己的思想表达出来，让更多人帮你纠正。</p>
+</li>
+</ol>
+<ol>
+<li><strong>建立个人IP</strong><br>写博客也是为了宣传自己，现在很多牛人也都是通过写博客后发表各种书籍，他们都是通过博客来建立自己的个人IP。现在很多公司招聘也要求应聘者有博客，如果有博客则加分。博客内容则可以反映一个人的知识体系和对知识理解的深度，通过博客就很容易向外面展示自己的技术情况。</li>
+</ol>
+<h1 id="二、关于博客平台问题"><a href="#二、关于博客平台问题" class="headerlink" title="二、关于博客平台问题"></a>二、关于博客平台问题</h1><p>之前在github上搭建过博客，这种方式就是有一个自己独立站，有自己独立IP,但是维护起来比较麻烦些，特别是插入图片的时候。插入图片时和编写html一样需要记住图片的路径。而蚂蚁笔记推出的博客功能能够方便地管理博客内容，同时还可以作为笔记进行存储，在插入图片等操作上都比较便捷。github上搭建博客需要对博客模板和博客内容进行备案，否则换台机器就无法使用了。因为之前的整套博客内容都放在旧电脑里，旧电脑不在身边，所以现在想发布博客都无法发布。</p>
+<h1 id="三、写什么内容"><a href="#三、写什么内容" class="headerlink" title="三、写什么内容"></a>三、写什么内容</h1><h3 id="1-可以是读书笔记和心得体会"><a href="#1-可以是读书笔记和心得体会" class="headerlink" title="(1) 可以是读书笔记和心得体会"></a>(1) 可以是读书笔记和心得体会</h3><p>在学习一门知识或技术的时候总会做一些笔记，为了方便以后自己回顾。在看书过程中有些想法和思绪来的很快，走的也很快。如果不记录下载下次可能就会忘记。在学习过程中也可能遇到一些问题，而这些问题也可以记录下来，避免下次学习的时候又重蹈覆辙。</p>
+<h3 id="2-可以是攻克难题的步骤和答案"><a href="#2-可以是攻克难题的步骤和答案" class="headerlink" title="(2) 可以是攻克难题的步骤和答案"></a>(2) 可以是攻克难题的步骤和答案</h3><p>在某个领域经常会遇到一些难题，比如虚拟机调优等。 这些解决问题的思路和步骤很宝贵，逼近有时候解决一个问题要花费很长的时间，这个过程可能会刷google, 甚至阅读官网英文文档都找不到对应的解决方式。经过好几天好不容易解决了，为了避免自己再次犯同样的错误可以记录下来，也方面其他人遇到相似问题时有个参考。</p>
+<h3 id="3-可以是自己已经熟练掌握了的东西"><a href="#3-可以是自己已经熟练掌握了的东西" class="headerlink" title="(3) 可以是自己已经熟练掌握了的东西"></a>(3) 可以是自己已经熟练掌握了的东西</h3><p>对于自己熟悉的知识自己的理解比较深刻，可以从更深层次去理解和表述知识。一方面将自己的理解的知识分享出去，另一方面也是为了促进自己往更深处学习。</p>
+<h3 id="4-可以是翻译看过的好文章"><a href="#4-可以是翻译看过的好文章" class="headerlink" title="(4) 可以是翻译看过的好文章"></a>(4) 可以是翻译看过的好文章</h3><p>外文中也有很多优秀的文章，在看到好的外文时可以将其翻译成中文。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    郑江龙
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://zhengjianglong.cn/2016/10/31/docs/15183678615630/" title="关于写博客的一些思考">http://zhengjianglong.cn/2016/10/31/docs/15183678615630/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/思考/" rel="tag"># 思考</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/01/docs/15183680888724/" rel="next" title="我的书单">
+                <i class="fa fa-chevron-left"></i> 我的书单
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/01/docs/15183680121411/" rel="prev" title="《穷爸爸富爸爸》|树立理财思维">
+                《穷爸爸富爸爸》|树立理财思维 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2016/10/31/docs/15183678615630/"
+     data-title="关于写博客的一些思考"
+     data-content=""
+     data-url="http://zhengjianglong.cn/2016/10/31/docs/15183678615630/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2016/10/31/docs/15183678615630/"
+           data-title="关于写博客的一些思考" data-url="http://zhengjianglong.cn/2016/10/31/docs/15183678615630/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/author.jpeg"
+                alt="入境繁华" />
+            
+              <p class="site-author-name" itemprop="name">入境繁华</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/JohnZhengHub" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/2711026835/profile?topnav=1&wvr=6" target="_blank" title="weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/ru-jing-fan-hua" target="_blank" title="zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhengjianglong@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://luodw.cc/" title="罗道文的博客" target="_blank">罗道文的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://youbingchenyoubing.leanote.com/" title="陈友兵的博客" target="_blank">陈友兵的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://arebya.github.io/" title="施亚的博客" target="_blank">施亚的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、为什么要写博客"><span class="nav-number">1.</span> <span class="nav-text">一、为什么要写博客</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、关于博客平台问题"><span class="nav-number">2.</span> <span class="nav-text">二、关于博客平台问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、写什么内容"><span class="nav-number">3.</span> <span class="nav-text">三、写什么内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-可以是读书笔记和心得体会"><span class="nav-number">3.0.1.</span> <span class="nav-text">(1) 可以是读书笔记和心得体会</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-可以是攻克难题的步骤和答案"><span class="nav-number">3.0.2.</span> <span class="nav-text">(2) 可以是攻克难题的步骤和答案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-可以是自己已经熟练掌握了的东西"><span class="nav-number">3.0.3.</span> <span class="nav-text">(3) 可以是自己已经熟练掌握了的东西</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-可以是翻译看过的好文章"><span class="nav-number">3.0.4.</span> <span class="nav-text">(4) 可以是翻译看过的好文章</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">入境繁华</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"jaylonzheng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("83pavVlI9KtTV5H0NspTyEn7-gzGzoHsz", "7MniqoeFo7WOp06lmwzbhnyS");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
