@@ -109,17 +109,17 @@
 
 
 
-<meta name="description" content="博学之，审问之，慎思之，明辨之，笃行之. 关于我　本人郑江龙，外号阿龙，龙仔，混江龙等．目前就读于厦门大学计算机系，是一名硕士研究生．主要研究方向是自然语言处理，从事课题是用深度学习方法进行篇章关系识别．作为一名IT程序员，平时除了喜欢Coding外，还喜欢摄影，运动，历史等． 知识特点 　主要从事JavaEE方向，熟悉Java,Java虚拟机原理，设计模式，掌握linux的基本操作．目前正在学习">
-<meta property="og:type" content="website">
-<meta property="og:title" content="关于我">
-<meta property="og:url" content="http://zhengjianglong.cn/about/index.html">
+<meta name="description" content="#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="入境繁华">
+<meta property="og:url" content="http://zhengjianglong.cn/2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/index.html">
 <meta property="og:site_name" content="入境繁华">
-<meta property="og:description" content="博学之，审问之，慎思之，明辨之，笃行之. 关于我　本人郑江龙，外号阿龙，龙仔，混江龙等．目前就读于厦门大学计算机系，是一名硕士研究生．主要研究方向是自然语言处理，从事课题是用深度学习方法进行篇章关系识别．作为一名IT程序员，平时除了喜欢Coding外，还喜欢摄影，运动，历史等． 知识特点 　主要从事JavaEE方向，熟悉Java,Java虚拟机原理，设计模式，掌握linux的基本操作．目前正在学习">
+<meta property="og:description" content="#">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2016-03-19T08:58:48.000Z">
+<meta property="og:updated_time" content="2018-02-15T05:21:07.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于我">
-<meta name="twitter:description" content="博学之，审问之，慎思之，明辨之，笃行之. 关于我　本人郑江龙，外号阿龙，龙仔，混江龙等．目前就读于厦门大学计算机系，是一名硕士研究生．主要研究方向是自然语言处理，从事课题是用深度学习方法进行篇章关系识别．作为一名IT程序员，平时除了喜欢Coding外，还喜欢摄影，运动，历史等． 知识特点 　主要从事JavaEE方向，熟悉Java,Java虚拟机原理，设计模式，掌握linux的基本操作．目前正在学习">
+<meta name="twitter:title" content="入境繁华">
+<meta name="twitter:description" content="#">
 
 
 
@@ -149,13 +149,13 @@
 
 
 
-  <link rel="canonical" href="http://zhengjianglong.cn/about/"/>
+  <link rel="canonical" href="http://zhengjianglong.cn/2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/"/>
 
 
 
 
 
-  <title>关于我 | 入境繁华</title>
+  <title> | 入境繁华</title>
   
 
 
@@ -270,43 +270,196 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">关于我</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body han-init-context">
         
         
-          <p><blockquote class="blockquote-center"><br>博学之，审问之，慎思之，明辨之，笃行之.<br></blockquote></p>
-<h3 id="关于我"><a href="#关于我" class="headerlink" title="关于我"></a>关于我</h3><p>　本人郑江龙，外号阿龙，龙仔，混江龙等．目前就读于厦门大学计算机系，是一名硕士研究生．主要研究方向是自然语言处理，从事课题是用深度学习方法进行篇章关系识别．作为一名IT程序员，平时除了喜欢Coding外，还喜欢摄影，运动，历史等．</p>
-<h3 id="知识特点"><a href="#知识特点" class="headerlink" title="知识特点 　"></a>知识特点 　</h3><p>主要从事JavaEE方向，熟悉Java,Java虚拟机原理，设计模式，掌握linux的基本操作．目前正在学习Spring框架源码．</p>
-<h3 id="本站架构"><a href="#本站架构" class="headerlink" title="本站架构"></a>本站架构</h3><p>本站主要采用github＋hexo技术搭建．csdn等技术博客都采用规规矩矩的页面设计模式，缺乏个性设计．听＠罗道文的介绍才了解到github中可以发布个人博客．与平时的技术博客不同，github博客可以完全自定义网站，采用hexo技术可以减少网站设计和博客编写难度．构建个人博客主要时为了平时写相关技术博客，作为平时学习的知识梳理，便于以后的复习和查阅．</p>
-<h3 id="联系方式"><a href="#联系方式" class="headerlink" title="联系方式"></a>联系方式</h3><p>Email:zjl_915@126.com<br>微博:＠入境繁华</p>
-<h3 id="友情连接"><a href="#友情连接" class="headerlink" title="友情连接"></a>友情连接</h3><p>罗道文　<a href="http://luodw.cc/" target="_blank" rel="noopener">http://luodw.cc/</a></p>
-<h3 id="推荐博客与网站"><a href="#推荐博客与网站" class="headerlink" title="推荐博客与网站"></a>推荐博客与网站</h3><p><a href="http://www.cnblogs.com/java-my-life/" target="_blank" rel="noopener">java-my-life</a>:里面的设计模式写的不错．</p>
-<p><strong>学习网站:</strong><br><a href="http://wiki.jikexueyuan.com/list/back-end/" target="_blank" rel="noopener">极客学院</a></p>
-<p><strong>笔试面试:</strong><br><a href="http://blog.csdn.net/v_july_v/article/details/6543438/" target="_blank" rel="noopener">july算法合集</a><br><a href="http://wiki.jikexueyuan.com/project/for-offer/question-thirteen.html" target="_blank" rel="noopener">剑指 Offer 学习心得(java实现)</a><br><a href="http://wiki.jikexueyuan.com/list/written-interview/" target="_blank" rel="noopener">笔试面试</a></p>
-<p>google数据库专家 <a href="http://blog.jcole.us/innodb/" target="_blank" rel="noopener">http://blog.jcole.us/innodb/</a></p>
-
+          <h1 class="post-title" itemprop="name headline"></h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-15T13:20:28+08:00">
+                2018-02-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/" class="leancloud_visitors" data-flag-title="">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
       
       
+
+      
+        <p># </p>
+
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    入境繁华
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://zhengjianglong.cn/2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/" title="">http://zhengjianglong.cn/2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/14/mybatis/mybatis源码解析(2)--初始化/" rel="next" title="Mybatis源码解析(2)--初始化">
+                <i class="fa fa-chevron-left"></i> Mybatis源码解析(2)--初始化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/"
+     data-title=""
+     data-content=""
+     data-url="http://zhengjianglong.cn/2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
   </div>
 
 
@@ -318,8 +471,8 @@
 
   
     <div class="comments" id="comments">
-      <div class="ds-thread" data-thread-key="about/index.html"
-           data-title="关于我" data-url="http://zhengjianglong.cn/about/index.html">
+      <div class="ds-thread" data-thread-key="2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/"
+           data-title="" data-url="http://zhengjianglong.cn/2018/02/15/mybatis/Mybatis源码解析(3)--SQL操作流程/">
       </div>
     </div>
 
@@ -346,17 +499,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -474,22 +618,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#关于我"><span class="nav-number">1.</span> <span class="nav-text">关于我</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#知识特点"><span class="nav-number">2.</span> <span class="nav-text">知识特点 　</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#本站架构"><span class="nav-number">3.</span> <span class="nav-text">本站架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#联系方式"><span class="nav-number">4.</span> <span class="nav-text">联系方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#友情连接"><span class="nav-number">5.</span> <span class="nav-text">友情连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推荐博客与网站"><span class="nav-number">6.</span> <span class="nav-text">推荐博客与网站</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
