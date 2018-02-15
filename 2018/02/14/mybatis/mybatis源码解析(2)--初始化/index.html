@@ -117,13 +117,13 @@
 <meta property="og:site_name" content="入境繁华">
 <meta property="og:description" content="在使用mybatis, spring等开源框架的时候,首先需要根据业务需求设置mybatis的配置，如数据源、mapper映射关系等。本文根据Mybatis源码介绍Mybatis如何完成初始化工作。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/images/mybatis.jpg">
-<meta property="og:image" content="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/images/15186013944163.jpg">
-<meta property="og:updated_time" content="2018-02-15T03:55:54.000Z">
+<meta property="og:image" content="http://zhengjianglong.cn/images/mybatis.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15186013944163.jpg">
+<meta property="og:updated_time" content="2018-02-15T05:06:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis源码解析(2)--初始化">
 <meta name="twitter:description" content="在使用mybatis, spring等开源框架的时候,首先需要根据业务需求设置mybatis的配置，如数据源、mapper映射关系等。本文根据Mybatis源码介绍Mybatis如何完成初始化工作。">
-<meta name="twitter:image" content="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/images/mybatis.jpg">
+<meta name="twitter:image" content="http://zhengjianglong.cn/images/mybatis.jpg">
 
 
 
@@ -461,7 +461,8 @@
 <li>XMLConfigBuilder解析mybatis-config.xml的配置到Configuration中， xml的解析交给了XPathParser， xml的格式验证交给XMLMapperEntityResolver处理。</li>
 <li>XMLMapperBuilder 解析Mapper配置文件的配置到Configuration中</li>
 </ul>
-<p> 根据源码，mybatis的解析过程如下图所示：<br> <img src="images/mybatis.jpg" alt="mybatis"><br>如上图所示,Mybatis的主要逻辑是：</p>
+<p> 根据源码，mybatis的解析过程如下图所示：<br> <img src="/images/mybatis.jpg" alt="mybatis"></p>
+<p>如上图所示,Mybatis的主要逻辑是：</p>
 <ol>
 <li>将mybatis-config.xml包装为Reader或InputStream</li>
 <li>将inputStream对象交给SqlSessionFactoryBuilder</li>
@@ -485,7 +486,7 @@
 <p>XMLConfigBuilder在初始化的时候会创建一个XPathParser对象。而XPathParser初始化时将inputStream直接转换为Document.之后SqlSessionFactoryBuilder会调用XMLConfigBuilder的parse方法，完成对DOM中各个Node的解析，并将结果设置到Configuration</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public Configuration parse() &#123;</span><br><span class="line">    // 防止重复调用</span><br><span class="line">    if (parsed) &#123;</span><br><span class="line">      throw new BuilderException(&quot;Each XMLConfigBuilder can only be used once.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    parsed = true;</span><br><span class="line">    // parser.evalNode(&quot;/configuration&quot;) 获取configuration的节点</span><br><span class="line">    XNode configurationNode = parser.evalNode(&quot;/configuration&quot;);</span><br><span class="line">    // 对Document 中的各节点进行解析</span><br><span class="line">    parseConfiguration(configurationNode);</span><br><span class="line">    return configuration;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 <h2 id="2-4-XPathParser"><a href="#2-4-XPathParser" class="headerlink" title="2.4 XPathParser"></a>2.4 XPathParser</h2><p>XPathParser 负责将xml配置文件转换为Document和XNode， mybatis-config.xml和StudentMapper.xml映射文件都是通过这个类处理、转换。XpathParser的作用是提供根据Xpath表达式获取基本的DOM节点Node信息的操作。</p>
-<p>XPathParser主要由以下三个重要部分组成:<br><img src="images/15186013944163.jpg" alt=""></p>
+<p>XPathParser主要由以下三个重要部分组成:<br><img src="/images/15186013944163.jpg" alt=""></p>
 <ul>
 <li>Document</li>
 <li>EntityResovler: 验证和解析xml用，mybatis采用XMLMapperEntityResolver类完成相关逻辑</li>

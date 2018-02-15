@@ -452,7 +452,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182666246971/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182664558778/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -471,7 +471,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/12/08/spring/15182666246971/" itemprop="url">Spring源码学习--bean加载之bean的实例化</a></h1>
+                <a class="post-title-link" href="/2015/12/08/spring/15182664558778/" itemprop="url">Spring源码学习--bean加载之名字转化与缓存中获取单例bean</a></h1>
         
 
         <div class="post-meta">
@@ -524,8 +524,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/12/08/spring/15182666246971/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182666246971/" itemprop="commentCount"></span>
+                <a href="/2015/12/08/spring/15182664558778/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182664558778/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -533,7 +533,7 @@
 
           
           
-             <span id="/2015/12/08/spring/15182666246971/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载之bean的实例化">
+             <span id="/2015/12/08/spring/15182664558778/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载之名字转化与缓存中获取单例bean">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -565,12 +565,12 @@
 
       
         
-          加载过程有一个高频率使用的方法，getObjectForBeanInstance(),无论是从缓存中获取bean还是根据不同的scope策略加载bean,得到的bean都要调用该方法检测正确性，其实就是检测当前bean是否是FactoryBean,如果是那么需要调用FactoryBean实例中的getObject()获得真正想要的bean
+          本文主要介绍bean加载的前两个步骤，即名字的转化和缓冲中获取单例bean.
           <!--noindex-->
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/12/08/spring/15182666246971/">
+            <a class="btn" href="/2015/12/08/spring/15182664558778/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1812,7 +1812,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/10/31/reading/15183678615630/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/10/31/reading/15182653611074/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -1831,7 +1831,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/10/31/reading/15183678615630/" itemprop="url">关于写博客的一些思考</a></h1>
+                <a class="post-title-link" href="/2015/10/31/reading/15182653611074/" itemprop="url">如何高效学习</a></h1>
         
 
         <div class="post-meta">
@@ -1866,8 +1866,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/思考/" itemprop="url" rel="index">
-                    <span itemprop="name">思考</span>
+                  <a href="/categories/阅读/" itemprop="url" rel="index">
+                    <span itemprop="name">阅读</span>
                   </a>
                 </span>
 
@@ -1884,8 +1884,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/10/31/reading/15183678615630/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/31/reading/15183678615630/" itemprop="commentCount"></span>
+                <a href="/2015/10/31/reading/15182653611074/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/31/reading/15182653611074/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1893,7 +1893,7 @@
 
           
           
-             <span id="/2015/10/31/reading/15183678615630/" class="leancloud_visitors" data-flag-title="关于写博客的一些思考">
+             <span id="/2015/10/31/reading/15182653611074/" class="leancloud_visitors" data-flag-title="如何高效学习">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1925,12 +1925,12 @@
 
       
         
-          之前老早就意识到写博客的重要性，但是在去实习以后就没有认真写过博客。反而友兵在博客这块积累很多，他在不同的渠道上都发表博客。现在他在蚂蚁笔记里积累很多资源，从c++底层到大数据学习框架，都做了认真细致的笔记。相反自己的学习笔记和博客则特别的少。从现在起应该好好写博客，一点点地积累，相信后面会有很大的改变。
+          最近接触了很多关于学习方法的内容，比如在kindle上无意中找到的一本杂志，里面提到如何提高阅读能力.在作者推荐下又看了《开动大脑》，接触了一些关于学习的理论，作者在书中提出了思维导图的学习方法，这种方法平时大家应该都有接触，平时我比较习惯叫做知识框架图．今天看了一期《鸿观》里面也提到了学习方法，发现不管知知乎上看到还是书里提供的，还是微信朋友圈看到那些关于学习方法的内容几乎都很相似，其核心都是在强调知识间的联系．于是想总结下这段时间看到的学习方法．
           <!--noindex-->
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/10/31/reading/15183678615630/">
+            <a class="btn" href="/2015/10/31/reading/15182653611074/">
               阅读全文 &raquo;
             </a>
           </div>
