@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="“Mybatis”" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在使用mybatis, spring等开源框架的时候,首先需要根据业务需求设置mybatis的配置，如数据源、mapper映射关系等。本文根据Mybatis源码介绍Mybatis如何完成初始化工作。">
+<meta name="keywords" content="“Mybatis”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis源码解析(2)--初始化">
+<meta property="og:url" content="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/index.html">
+<meta property="og:site_name" content="入境繁华">
+<meta property="og:description" content="在使用mybatis, spring等开源框架的时候,首先需要根据业务需求设置mybatis的配置，如数据源、mapper映射关系等。本文根据Mybatis源码介绍Mybatis如何完成初始化工作。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/images/mybatis.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/images/15186013944163.jpg">
+<meta property="og:updated_time" content="2018-02-15T03:55:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mybatis源码解析(2)--初始化">
+<meta name="twitter:description" content="在使用mybatis, spring等开源框架的时候,首先需要根据业务需求设置mybatis的配置，如数据源、mapper映射关系等。本文根据Mybatis源码介绍Mybatis如何完成初始化工作。">
+<meta name="twitter:image" content="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/images/mybatis.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/"/>
+
+
+
+
+
+  <title>Mybatis源码解析(2)--初始化 | 入境繁华</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">入境繁华</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">不积跬步无以至千里</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Mybatis源码解析(2)--初始化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-14T12:12:43+08:00">
+                2018-02-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mybatis源码解析/" itemprop="url" rel="index">
+                    <span itemprop="name">Mybatis源码解析</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/14/mybatis/mybatis源码解析(2)--初始化/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/14/mybatis/mybatis源码解析(2)--初始化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/02/14/mybatis/mybatis源码解析(2)--初始化/" class="leancloud_visitors" data-flag-title="Mybatis源码解析(2)--初始化">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+               <!-- 在使用mybatis, spring等开源框架的时候,首先需要根据业务需求设置mybatis的配置，如数据源、mapper映射关系等。本文根据Mybatis源码介绍Mybatis如何完成初始化工作。 文章中删除 -->
+                 
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="一-介绍"><a href="#一-介绍" class="headerlink" title="一. 介绍"></a>一. 介绍</h1><p>在使用mybatis，spring等开源框架的时候，首先需要根据业务需求设置mybatis的配置，如: 数据源、mapper映射关系等。mybatis的配置包含两个大方面：</p>
+<ol>
+<li>configuration配置</li>
+<li>mapper配置</li>
+</ol>
+<h2 id="1-1-configuration配置"><a href="#1-1-configuration配置" class="headerlink" title="1.1 configuration配置"></a>1.1 configuration配置</h2><p>configuration主要提供了mybatis的主要配置，主要包括以下几个方面：</p>
+<ul>
+<li><strong>environments环境</strong>:<ul>
+<li>environment 环境变量</li>
+<li>transactionManager 事物管理器</li>
+<li>dataSource 数据源   </li>
+</ul>
+</li>
+<li><strong>properties属性</strong>： </li>
+<li><strong>setting属性</strong>:</li>
+<li><strong>typeAlias命名</strong>:</li>
+<li><strong>typeHandlers类型处理器</strong></li>
+<li><strong>objectFactory对象工厂</strong></li>
+<li><strong>plugins插件</strong></li>
+</ul>
+<h3 id="1-1-1-environments"><a href="#1-1-1-environments" class="headerlink" title="1.1.1 environments"></a>1.1.1 environments</h3><p>MyBatis 支持配置多个dataSource环境, 可以通过environments来配置多个环境的数据源、事物管理器TransactionManager、SqlSessionFactory等。</p>
+<h3 id="1-1-2-properties"><a href="#1-1-2-properties" class="headerlink" title="1.1.2 properties"></a>1.1.2 properties</h3><p>属性配置元素可以将配置值具体化到一个属性文件中，并且使用属性文件的 key 名作为占位符。一般在开发中我们会将数据库配置的信息存放在application.properties文件中。通过该配置可以获取属性配置元素，并通过占位符方式设置到mybatis配置文件中。</p>
+<h3 id="1-1-3-typeAliases-类型别名"><a href="#1-1-3-typeAliases-类型别名" class="headerlink" title="1.1.3 typeAliases 类型别名"></a>1.1.3 typeAliases 类型别名</h3><p>SQLMapper 配置文件中，对于 resultType 和 parameterType 属性值，我们需要使用 JavaBean 的完全限定名。我们可以通过typeAliases为这些全限定名取一个别名，可以简化开发过程。</p>
+<h3 id="1-1-4-typeHandlers-类型处理器"><a href="#1-1-4-typeHandlers-类型处理器" class="headerlink" title="1.1.4 typeHandlers 类型处理器"></a>1.1.4 typeHandlers 类型处理器</h3><p>当 MyBatis 将一个 Java 对象作为输入参数执行 INSERT 语句操作时，它会创建一个 PreparedStatement 对象，并且 使用 setXXX()方式对占位符设置相应的参数值。这里，XXX 可以是 Int，String，Date 等 Java 对象属性类型的任意一个。MyBatis 对于以下的类型使用内建的类型处理器:所有的基本数据类型、基本类型的包裹类型、byte[]、 java.util.Date、java.sql.Date、java.sql.Time、java.sql.Timestamp、java 枚举类型等。</p>
+<p>如果不是这些内建类型应该如何处理呢？mybatis为我们提供了typeHandlers类型处理器，让我们去指定位置类型的处理方式。当遇到该类型值时，则调用对应的typeHandlers进行处理。</p>
+<h3 id="1-1-5-全局参数设置-Settings"><a href="#1-1-5-全局参数设置-Settings" class="headerlink" title="1.1.5 全局参数设置 Settings"></a>1.1.5 全局参数设置 Settings</h3><p>这里主要是设置mybatis的一些控制变量，通过settings可以对一些参数做修改，覆盖MyBatis 默认的全局参数设置。如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;settings&gt;</span><br><span class="line">    &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;true&quot; /&gt;</span><br><span class="line">&lt;/settings&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="1-2-mapper配置"><a href="#1-2-mapper配置" class="headerlink" title="1.2 mapper配置"></a>1.2 mapper配置</h2><p>mapper主要配置sql语句与java mapper对象之间的关系。Mapper XML中的每个SQL语句都会定义一个唯一的statement ID，即对应java mapper对象的方法和参数的组合。 当我们需要执行mapper对应的方法时(statement ID)，就会解析调用对应的SQL语句。</p>
+<h1 id="二-源码实现"><a href="#二-源码实现" class="headerlink" title="二. 源码实现"></a>二. 源码实现</h1><p>Mybatis中提供了Configuration对象来存储这些配置信息，Configuration类保存了所有Mybatis的配置信息,如mybaits-config.xml和Student.xml中的所有配置信息都会存放在Configuration。一般情况下Mybatis在运行过程中只会创建一个Configration对象，并且配置信息不能再被修改。</p>
+<p>在执行数据操作时，首先会从这个Configuration中获取相关的配置信息，然后执行。mybatis提供了两种配置方式：</p>
+<ol>
+<li>基于xml的配置: 基于XML配置文件的方式是将MyBatis的所有配置信息放在XML文件中，MyBatis通过加载并XML配置文件，将配置文信息组装成内部的Configuration对象。</li>
+<li>基于java api的配置: 使用java代码手动创建Configuration，后将配置参数set 进入Configuration对象中。</li>
+</ol>
+<p>xml配置的方式本质上还是和java api配置方式一致，只是多了一些xml的解析过程。本文主要讨论mybatis如何通过读取xml文件来初始化Mybatis，初始化Configuration。</p>
+<h2 id="2-1-切入点"><a href="#2-1-切入点" class="headerlink" title="2.1 切入点"></a>2.1 切入点</h2><p>为了看源码如何执行加载，我们需要找到一个切入口，通过该切入口进行跟进。首先根据官网的文档,我们可以快速创建一个简单的demo完成以下工作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">String resource = &quot;mybatis-config.xml&quot;;  </span><br><span class="line">InputStream inputStream = Resources.getResourceAsStream(resource);  </span><br><span class="line">// mybatis初始化 </span><br><span class="line">SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);  </span><br><span class="line"></span><br><span class="line">// 创建SqlSession</span><br><span class="line">SqlSession sqlSession = sqlSessionFactory.openSession();</span><br><span class="line"></span><br><span class="line">StudentMapper studentMapper = sqlSession.getMapper(StudentMapper.class);</span><br><span class="line">// 执行SQL语句</span><br><span class="line">Student student = studentMapper.findStudentById(1);</span><br></pre></td></tr></table></figure>
+<p>上述代码的功能：</p>
+<ol>
+<li>mybatis初始化, 根据配置文件mybatis-config.xml 配置文件，创建SqlSessionFactory对象。</li>
+<li>创建SqlSession</li>
+<li>执行SQL语句</li>
+</ol>
+<p>mybatis的初始化动作主要发生在这句代码中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);</span><br></pre></td></tr></table></figure>
+<p>接下来我们看看mybatis是如何完成初始化过程的。</p>
+<h2 id="2-2-MyBatis初始化基本过程"><a href="#2-2-MyBatis初始化基本过程" class="headerlink" title="2.2 MyBatis初始化基本过程"></a>2.2 MyBatis初始化基本过程</h2><p>xml格式定义有两种，DTD和XSD. Mybatis 的xml配置采用了DTD格式，两者比较可以参考: <a href="http://zhengjianglong.cn/2015/12/06/docs/15182657110957/">Spring源码学习–DTD和XML Schema介绍</a></p>
+<p>根据spring源码的阅读经验上看，mybatis的流程大概是：</p>
+<ol>
+<li>Mybatis首先会将配置文件(mybatis-config.xml)转换IO流资源(Spring采用自己构建的一套Resource体系，而Mybatis采用的是Java内置的如InputSteam、Reader)</li>
+<li>检查IO流资源是否符合Mybatis的xml DTD规范。为了提高响应速度，避免联网验证，一般模块都会提供xml配置声明(DTD), 并实现entityResolver来验证。</li>
+<li>将IO流资源转换为Document。 </li>
+<li>对Document中的各个Node(properties、setting、environments等)进行解析，将内容存放到一个容器中–configuration。</li>
+<li>在Node中比较特殊的是mapper配置，如果mapper配置是resource类型，则读取mapper资源进行解析</li>
+<li>返回configuration</li>
+</ol>
+<p>流程中的关键步骤就是将IO流资源转换为document, 然后document的node信息解析存放到Configuration中。Mybatis是如何实现的呢？针对mybatis-config.xml配置文件和Mapper配置文件，Mybatis由两个相对应的类来解析的:</p>
+<ul>
+<li>XMLConfigBuilder解析mybatis-config.xml的配置到Configuration中， xml的解析交给了XPathParser， xml的格式验证交给XMLMapperEntityResolver处理。</li>
+<li>XMLMapperBuilder 解析Mapper配置文件的配置到Configuration中</li>
+</ul>
+<p> 根据源码，mybatis的解析过程如下图所示：<br> <img src="images/mybatis.jpg" alt="mybatis"><br>如上图所示,Mybatis的主要逻辑是：</p>
+<ol>
+<li>将mybatis-config.xml包装为Reader或InputStream</li>
+<li>将inputStream对象交给SqlSessionFactoryBuilder</li>
+<li>SqlSessionFactoryBuilder调用XMLConfigBuilder对象的parse()方法；</li>
+<li>SqlSessionFactoryBuilder根据Configuration对象创建一个DefaultSessionFactory对象；</li>
+</ol>
+<p>SqlSessionFactoryBuilder相关代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public SqlSessionFactory build(InputStream inputStream)  &#123;  </span><br><span class="line">      return build(inputStream, null, null);  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties)  &#123;  </span><br><span class="line">      try  &#123;  </span><br><span class="line">          //2. 创建XMLConfigBuilder对象用来解析XML配置文件，生成Configuration对象  </span><br><span class="line">          XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);  </span><br><span class="line">          //3. 将XML配置文件内的信息解析成Java对象Configuration对象  </span><br><span class="line">          Configuration config = parser.parse();  </span><br><span class="line">          //4. 根据Configuration对象创建出SqlSessionFactory对象  </span><br><span class="line">          return build(config);  </span><br><span class="line">      &#125; catch (Exception e) &#123;  </span><br><span class="line">          throw ExceptionFactory.wrapException(&quot;Error building SqlSession.&quot;, e);  </span><br><span class="line">      &#125; finally &#123;  </span><br><span class="line">          ErrorContext.instance().reset();  </span><br><span class="line">          try &#123;  </span><br><span class="line">              inputStream.close();  </span><br><span class="line">          &#125; catch (IOException e) &#123;  </span><br><span class="line">              // Intentionally ignore. Prefer previous error.  </span><br><span class="line">          &#125;  </span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 从此处可以看出，MyBatis内部通过Configuration对象来创建SqlSessionFactory,用户也可以自己通过API构造好Configuration对象，调用此方法创SqlSessionFactory  </span><br><span class="line">public SqlSessionFactory build(Configuration config) &#123;  </span><br><span class="line">      return new DefaultSqlSessionFactory(config);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>mybatis初始化过程中涉及到以下几个重要的类：</p>
+<ul>
+<li>SqlSessionFactoryBuilder： SqlSessionFactory的构造器，用于创建SqlSessionFactory，采用了Builder设计模式</li>
+<li>Configuration: 如上面所介绍，主要是存储mybatis的所有配置信息</li>
+<li>SqlSessionFactory: SqlSession工厂类，以工厂形式创建SqlSession对象，采用了Factory工厂设计模式</li>
+<li>XmlConfigParser: 解析mybatis-config.xml的配置到Configuration中</li>
+<li>XMLMapperBuilder: 解析Mapper配置文件的配置到Configuration中</li>
+<li>XPathParser：负责将IO流转换为Document,XmlConfigParser和XmlConfigParser都使用该类完成Document的创建、获取Node等</li>
+<li>XMLMapperEntityResolver: 避免xml文件网络验证，提高效率，而实现的xml本地化验证器。根据Mybatis定义的dtd规范，验证xml的格式</li>
+</ul>
+<h2 id="2-3-XMLConfigBuilder"><a href="#2-3-XMLConfigBuilder" class="headerlink" title="2.3 XMLConfigBuilder"></a>2.3 XMLConfigBuilder</h2><p>XMLConfigBuilder 在实例化的时候会创建XPathParser，并完成了IO流资源到Document的转换。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// XMLConfigBuilder 构造器</span><br><span class="line">public XMLConfigBuilder(InputStream inputStream, String environment, Properties props) &#123;</span><br><span class="line">    /**</span><br><span class="line">     * 创建一个解析器</span><br><span class="line">     */</span><br><span class="line">    this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  // XPathParser 构造器</span><br><span class="line">  public XPathParser(InputStream inputStream, boolean validation, Properties variables, EntityResolver entityResolver) &#123;</span><br><span class="line">    commonConstructor(validation, variables, entityResolver);</span><br><span class="line">    /**</span><br><span class="line">     * 完成document的创建</span><br><span class="line">     */</span><br><span class="line">    this.document = createDocument(new InputSource(inputStream));</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>XMLConfigBuilder在初始化的时候会创建一个XPathParser对象。而XPathParser初始化时将inputStream直接转换为Document.之后SqlSessionFactoryBuilder会调用XMLConfigBuilder的parse方法，完成对DOM中各个Node的解析，并将结果设置到Configuration</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public Configuration parse() &#123;</span><br><span class="line">    // 防止重复调用</span><br><span class="line">    if (parsed) &#123;</span><br><span class="line">      throw new BuilderException(&quot;Each XMLConfigBuilder can only be used once.&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    parsed = true;</span><br><span class="line">    // parser.evalNode(&quot;/configuration&quot;) 获取configuration的节点</span><br><span class="line">    XNode configurationNode = parser.evalNode(&quot;/configuration&quot;);</span><br><span class="line">    // 对Document 中的各节点进行解析</span><br><span class="line">    parseConfiguration(configurationNode);</span><br><span class="line">    return configuration;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-4-XPathParser"><a href="#2-4-XPathParser" class="headerlink" title="2.4 XPathParser"></a>2.4 XPathParser</h2><p>XPathParser 负责将xml配置文件转换为Document和XNode， mybatis-config.xml和StudentMapper.xml映射文件都是通过这个类处理、转换。XpathParser的作用是提供根据Xpath表达式获取基本的DOM节点Node信息的操作。</p>
+<p>XPathParser主要由以下三个重要部分组成:<br><img src="images/15186013944163.jpg" alt=""></p>
+<ul>
+<li>Document</li>
+<li>EntityResovler: 验证和解析xml用，mybatis采用XMLMapperEntityResolver类完成相关逻辑</li>
+<li>XPath</li>
+</ul>
+<p>XMLConfigBuilder会将XML配置文件的信息转换为Document对象，这里采用了DOM完成解析。<br>XML配置定义文件DTD转换成XMLMapperEntityResolver对象，通过XMLMapperEntityResolver和Xpath完成从Document中获取DOM节点Node信息的操作。</p>
+<p>当XMLConfigBuilder调用parse()方法：会从XPathParser中取出 <configuration>节点对应的Node对象，然后解析此Node节点的子Node：</configuration></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">private void parseConfiguration(XNode root) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">      //issue #117 read properties first</span><br><span class="line">      // 1.首先处理properties 节点</span><br><span class="line">      propertiesElement(root.evalNode(&quot;properties&quot;));</span><br><span class="line">      // 2. 处理settings配置</span><br><span class="line">      Properties settings = settingsAsProperties(root.evalNode(&quot;settings&quot;));</span><br><span class="line">      loadCustomVfs(settings);</span><br><span class="line">      // 3. 处理类型命名 typeAliases</span><br><span class="line">      typeAliasesElement(root.evalNode(&quot;typeAliases&quot;));</span><br><span class="line">      // 4. 处理插件配置</span><br><span class="line">      pluginElement(root.evalNode(&quot;plugins&quot;));</span><br><span class="line">      // 5. 处理objectFactory</span><br><span class="line">      objectFactoryElement(root.evalNode(&quot;objectFactory&quot;));</span><br><span class="line">      objectWrapperFactoryElement(root.evalNode(&quot;objectWrapperFactory&quot;));</span><br><span class="line">      reflectorFactoryElement(root.evalNode(&quot;reflectorFactory&quot;));</span><br><span class="line">      settingsElement(settings);</span><br><span class="line">      // read it after objectFactory and objectWrapperFactory issue #631</span><br><span class="line">      environmentsElement(root.evalNode(&quot;environments&quot;));</span><br><span class="line">      databaseIdProviderElement(root.evalNode(&quot;databaseIdProvider&quot;));</span><br><span class="line">      typeHandlerElement(root.evalNode(&quot;typeHandlers&quot;));</span><br><span class="line">      /**</span><br><span class="line">       * 处理mappers</span><br><span class="line">       */</span><br><span class="line">      mapperElement(root.evalNode(&quot;mappers&quot;));</span><br><span class="line">    &#125; catch (Exception e) &#123;</span><br><span class="line">      throw new BuilderException(&quot;Error parsing SQL Mapper Configuration. Cause: &quot; + e, e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-5-各Node的解析"><a href="#2-5-各Node的解析" class="headerlink" title="2.5 各Node的解析"></a>2.5 各Node的解析</h2><h3 id="2-5-1-environments-配置解析"><a href="#2-5-1-environments-配置解析" class="headerlink" title="2.5.1 environments 配置解析"></a>2.5.1 environments 配置解析</h3><h3 id="2-5-2-typeAliases-配置解析"><a href="#2-5-2-typeAliases-配置解析" class="headerlink" title="2.5.2 typeAliases 配置解析"></a>2.5.2 typeAliases 配置解析</h3><p>typeAliases的配置分为两种：1）基于package, Mybatis则会把这个package下的所有类都扫描，设置别名。2）根据全限定类名设置，Mybatis只要直接设置就可以。</p>
+<p>通过package的设置代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void registerAliases(String packageName, Class&lt;?&gt; superType)&#123;</span><br><span class="line">    ResolverUtil&lt;Class&lt;?&gt;&gt; resolverUtil = new ResolverUtil&lt;Class&lt;?&gt;&gt;();</span><br><span class="line">    resolverUtil.find(new ResolverUtil.IsA(superType), packageName);</span><br><span class="line">    // 获取包下 所有的类</span><br><span class="line">    Set&lt;Class&lt;? extends Class&lt;?&gt;&gt;&gt; typeSet = resolverUtil.getClasses();</span><br><span class="line">    for(Class&lt;?&gt; type : typeSet)&#123;</span><br><span class="line">      if (!type.isAnonymousClass() &amp;&amp; !type.isInterface() &amp;&amp; !type.isMemberClass()) &#123;</span><br><span class="line">        // 注册</span><br><span class="line">        registerAlias(type);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>如果基于package或未指定alias时，Mybatis会优先使用@Alais的配置，如果不存在则再使用目标类的类名小写作为别名。相反如果xml设置了别名，那么Mybatis则有限考虑XML中的别名设置，而不考虑@Alias。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">String alias = type.getSimpleName();</span><br></pre></td></tr></table></figure>
+<p>Mybatis的别名不区分大小写，所以在注册的时候会将别名alias先转化为小写。然后存放到configuration的TypeAliasRegistry属性的TYPE_ALIASES里。</p>
+<p>Configuration在初始化的时候，默认会为一些类设置别名, 包括JDBC, JNDI,POOLED等。通过这些别名，Mybatis也可以简化用户的配置。具体如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public Configuration() &#123;</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;JDBC&quot;, JdbcTransactionFactory.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;MANAGED&quot;, ManagedTransactionFactory.class);</span><br><span class="line"></span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;JNDI&quot;, JndiDataSourceFactory.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;POOLED&quot;, PooledDataSourceFactory.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;UNPOOLED&quot;, UnpooledDataSourceFactory.class);</span><br><span class="line"></span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;PERPETUAL&quot;, PerpetualCache.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;FIFO&quot;, FifoCache.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;LRU&quot;, LruCache.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;SOFT&quot;, SoftCache.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;WEAK&quot;, WeakCache.class);</span><br><span class="line"></span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;DB_VENDOR&quot;, VendorDatabaseIdProvider.class);</span><br><span class="line"></span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;XML&quot;, XMLLanguageDriver.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;RAW&quot;, RawLanguageDriver.class);</span><br><span class="line"></span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;SLF4J&quot;, Slf4jImpl.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;COMMONS_LOGGING&quot;, JakartaCommonsLoggingImpl.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;LOG4J&quot;, Log4jImpl.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;LOG4J2&quot;, Log4j2Impl.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;JDK_LOGGING&quot;, Jdk14LoggingImpl.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;STDOUT_LOGGING&quot;, StdOutImpl.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;NO_LOGGING&quot;, NoLoggingImpl.class);</span><br><span class="line"></span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;CGLIB&quot;, CglibProxyFactory.class);</span><br><span class="line">    typeAliasRegistry.registerAlias(&quot;JAVASSIST&quot;, JavassistProxyFactory.class);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-6-mapper解析"><a href="#2-6-mapper解析" class="headerlink" title="2.6 mapper解析"></a>2.6 mapper解析</h2><p>Node中有个比较特别的Node,是mapper。 mapper如果是resource类型，则需要加载xml资源进行解析。将xml转换为document，再读取里面的Node点点一一解析，将解析结果存储到Configuration中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mapperElement(root.evalNode(&quot;mappers&quot;));</span><br></pre></td></tr></table></figure></p>
+<p>接下来我们将分析下Mapper的加载过程，Mybatis提供了两种方式配置mapper：</p>
+<ul>
+<li>注解方式配置。这种一般需要在xml配置文件中指明base package或class，Mybatis从这个包里获取所有的Mapper，并根据一些注解如@Insert等来构建SQL和statement ID的映射关系。</li>
+<li><p>xml配置。xml配置文件的路径提供了两种方式，一个是指定resource即指定class路径下的具体问题。另一种是利用文件系统来指定url。</p>
+<p>因此，mybatis的配置信息包含以下四种:</p>
+<ul>
+<li>package: 根据包去扫描获取</li>
+<li>class：直接定位class，通过注解信息，解析mapper的配置。和package都属于注解配置方式。</li>
+<li>resource： 指定classpath路径，根据该路径获取mapper的配置文件。</li>
+<li>url: 指定文件系统路径，根据该路径获取mapper的文件配置。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-6-1-xml配置mapper方式解析"><a href="#2-6-1-xml配置mapper方式解析" class="headerlink" title="2.6.1 xml配置mapper方式解析"></a>2.6.1 xml配置mapper方式解析</h3><p>首先都是根据路径(resource或url)获取资源文件，并转化为InputStream。 然后将inputSteam交给XMLMapperBuilder类进行解析，解析的结果存到Configuration中。和Mybatis-config.xml加载、解析过程一样，Mapper.xml文件首先通过XPathParser构建Document, 然后对Document中的接个Node进行解析。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = Resources.getUrlAsStream(url);</span><br><span class="line">XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());</span><br><span class="line">mapperParser.parse();</span><br></pre></td></tr></table></figure>
+<p>mapper映射文件中的配置包含三类:</p>
+<ol>
+<li>ResultMaps 配置： 结果映射配置</li>
+<li>cache 给定命名空间的缓存配置</li>
+<li>cache-ref: 其他命名空间缓存配置的引用</li>
+<li>Statements 配置: Statement ID和SQL的映射关系</li>
+<li>sql 可被其他语句引用的可重用语句块。</li>
+<li>statement（SELECT|UPDATE|DELETE|INSERT: 增删改查）解析</li>
+</ol>
+<h4 id="resultMap"><a href="#resultMap" class="headerlink" title="resultMap"></a>resultMap</h4><p>根据myBatis的要求，从Node中解析以下信息:</p>
+<ul>
+<li>constructor:  类在实例化时,用来注入结果到构造方法中</li>
+<li>id: 一个 ID 结果;标记结果作为 ID 可以帮助提高整体效能</li>
+<li>result: 注入到字段或 JavaBean 属性的普通结果</li>
+<li>association: 一个复杂的类型关联;许多结果将包成这种类型</li>
+<li>collection: 复杂类型的集</li>
+<li><p>discriminator: 使用结果值来决定使用哪个结果映射</p>
+<p>解析属性值，无非判断Node节点类型，从中读取对应字段的值。对每一元素都会建一个ResultMaping来存储映射关系。最后将所有元素的ResultMapping都存放到ResultMap。ResultMap采用链表结构在存储这些ResultMaping, 查询的时候需要顺序查找。如果表属性比较多的话，影响性能。但一般情况下一个表的属性或字段不会太多，因此对性能影响可以忽略。ResultMap的存储结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">private String id;</span><br><span class="line"> private Class&lt;?&gt; type;</span><br><span class="line"> private List&lt;ResultMapping&gt; resultMappings;</span><br><span class="line"> private List&lt;ResultMapping&gt; idResultMappings;</span><br><span class="line"> private List&lt;ResultMapping&gt; constructorResultMappings;</span><br><span class="line"> private List&lt;ResultMapping&gt; propertyResultMappings;</span><br><span class="line"> private Set&lt;String&gt; mappedColumns;</span><br><span class="line"> private Set&lt;String&gt; mappedProperties;</span><br><span class="line"> private Discriminator discriminator;</span><br><span class="line"> private boolean hasNestedResultMaps;</span><br><span class="line"> private boolean hasNestedQueries;</span><br><span class="line"> private Boolean autoMapping;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p> 全部解析完成后，会将构建好的ResultMap保存到configuration中。 Configuration.addResultMap代码：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">resultMaps.put(rm.getId(), rm);</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p> 因此可以通过Id，就可以获取ResultMap对象。那么Id又是什么？一般在定义resultMap的时候都会设定一个id,作为该resultMap的唯一标识:<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;resultMap id=&quot;detailedBlogResultMap&quot; type=&quot;Blog&quot;&gt;</span><br></pre></td></tr></table></figure></p>
+<p>参考: <a href="http://www.mybatis.org/mybatis-3/zh/sqlmap-xml.html" target="_blank" rel="noopener">http://www.mybatis.org/mybatis-3/zh/sqlmap-xml.html</a></p>
+<h4 id="statement解析"><a href="#statement解析" class="headerlink" title="statement解析"></a>statement解析</h4><p>statement包含了INSERT、SELECT、DELETE、UPDATE这些具体SQL的配置，statement的解析是交给了XMLStatementBuilder来负责解析。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">for (XNode context : list) &#123;</span><br><span class="line">      final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);</span><br><span class="line">      try &#123;</span><br><span class="line">        statementParser.parseStatementNode();</span><br><span class="line">      &#125; catch (IncompleteElementException e) &#123;</span><br><span class="line">        configuration.addIncompleteStatement(statementParser);</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>首先获取Node中的各个元素值，如id, resultType、paramterMap等。</li>
+<li>利用LanguageDriver解析SQL语句，包含动态SQL语句。如果是动态SQL则解析完成用DynamicSqlSource类包装，反之采用RawSqlSource包装。</li>
+<li>动态SQL解析的时候会给每个动态标签设置一个Handler处理器，采用了策略模式，根据标签名字从map中获取对应的处理器。</li>
+</ol>
+<p>不同标签对应的处理器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">private void initNodeHandlerMap() &#123;</span><br><span class="line">    nodeHandlerMap.put(&quot;trim&quot;, new TrimHandler());</span><br><span class="line">    nodeHandlerMap.put(&quot;where&quot;, new WhereHandler());</span><br><span class="line">    nodeHandlerMap.put(&quot;set&quot;, new SetHandler());</span><br><span class="line">    nodeHandlerMap.put(&quot;foreach&quot;, new ForEachHandler());</span><br><span class="line">    nodeHandlerMap.put(&quot;if&quot;, new IfHandler());</span><br><span class="line">    nodeHandlerMap.put(&quot;choose&quot;, new ChooseHandler());</span><br><span class="line">    nodeHandlerMap.put(&quot;when&quot;, new IfHandler());</span><br><span class="line">    nodeHandlerMap.put(&quot;otherwise&quot;, new OtherwiseHandler());</span><br><span class="line">    nodeHandlerMap.put(&quot;bind&quot;, new BindHandler());</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-6-基于Java-API手动加载XML配置文件"><a href="#2-6-基于Java-API手动加载XML配置文件" class="headerlink" title="2.6 基于Java API手动加载XML配置文件"></a>2.6 基于Java API手动加载XML配置文件</h2><p>根据maybatis的源码，我们可以使用XMLConfigBuilder手动解析XML配置文件来创建Configuration对象，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">String resource = &quot;mybatis-config.xml&quot;;  </span><br><span class="line">InputStream inputStream = Resources.getResourceAsStream(resource);  </span><br><span class="line">// 手动创建XMLConfigBuilder，并解析创建Configuration对象  </span><br><span class="line">XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, null,null);  </span><br><span class="line">Configuration configuration=parse();  </span><br><span class="line">// 使用Configuration对象创建SqlSessionFactory  </span><br><span class="line">SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);  </span><br><span class="line">// 使用MyBatis  </span><br><span class="line">SqlSession sqlSession = sqlSessionFactory.openSession();  </span><br><span class="line">StudentMapper studentMapper = sqlSession.getMapper(StudentMapper.class);</span><br><span class="line">// 执行SQL语句</span><br><span class="line">Student student = studentMapper.findStudentById(1);</span><br></pre></td></tr></table></figure></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>[1] <a href="http://blog.csdn.net/ashan_li/article/list" target="_blank" rel="noopener">ashan的maybatis系列</a><br>[2] <a href="http://blog.csdn.net/jie1336950707/article/details/48956727" target="_blank" rel="noopener">dtd声明和entityResolver避免saxReader联网验证</a><br>[3] <a href="https://www.cnblogs.com/lanxuezaipiao/archive/2013/05/17/3082949.html" target="_blank" rel="noopener">四种生成和解析XML文档的方法详解（介绍+优缺点比较+示例）</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    入境繁华
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/" title="Mybatis源码解析(2)--初始化">http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码解析/" rel="tag"># 源码解析</a>
+          
+            <a href="/tags/Mybatis/" rel="tag"># Mybatis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/14/mybatis/mybatis_source_1_prepare/" rel="next" title="Mybatis源码解析(1)--准备">
+                <i class="fa fa-chevron-left"></i> Mybatis源码解析(1)--准备
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2018/02/14/mybatis/mybatis源码解析(2)--初始化/"
+     data-title="Mybatis源码解析(2)--初始化"
+     data-content=""
+     data-url="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2018/02/14/mybatis/mybatis源码解析(2)--初始化/"
+           data-title="Mybatis源码解析(2)--初始化" data-url="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/author.jpeg"
+                alt="入境繁华" />
+            
+              <p class="site-author-name" itemprop="name">入境繁华</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/JohnZhengHub" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/2711026835/profile?topnav=1&wvr=6" target="_blank" title="weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/ru-jing-fan-hua" target="_blank" title="zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhengjianglong@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://luodw.cc/" title="罗道文的博客" target="_blank">罗道文的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://youbingchenyoubing.leanote.com/" title="陈友兵的博客" target="_blank">陈友兵的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://arebya.github.io/" title="施亚的博客" target="_blank">施亚的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://rannn.cc/" title="陶然的博客" target="_blank">陶然的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一-介绍"><span class="nav-number">1.</span> <span class="nav-text">一. 介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-configuration配置"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 configuration配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-environments"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1.1 environments</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-properties"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.1.2 properties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-3-typeAliases-类型别名"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.1.3 typeAliases 类型别名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-4-typeHandlers-类型处理器"><span class="nav-number">1.1.4.</span> <span class="nav-text">1.1.4 typeHandlers 类型处理器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-5-全局参数设置-Settings"><span class="nav-number">1.1.5.</span> <span class="nav-text">1.1.5 全局参数设置 Settings</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-mapper配置"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 mapper配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二-源码实现"><span class="nav-number">2.</span> <span class="nav-text">二. 源码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-切入点"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 切入点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-MyBatis初始化基本过程"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 MyBatis初始化基本过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-XMLConfigBuilder"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 XMLConfigBuilder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-XPathParser"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 XPathParser</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-各Node的解析"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 各Node的解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-1-environments-配置解析"><span class="nav-number">2.5.1.</span> <span class="nav-text">2.5.1 environments 配置解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-2-typeAliases-配置解析"><span class="nav-number">2.5.2.</span> <span class="nav-text">2.5.2 typeAliases 配置解析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-mapper解析"><span class="nav-number">2.6.</span> <span class="nav-text">2.6 mapper解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-1-xml配置mapper方式解析"><span class="nav-number">2.6.1.</span> <span class="nav-text">2.6.1 xml配置mapper方式解析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#resultMap"><span class="nav-number">2.6.1.1.</span> <span class="nav-text">resultMap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#statement解析"><span class="nav-number">2.6.1.2.</span> <span class="nav-text">statement解析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-基于Java-API手动加载XML配置文件"><span class="nav-number">2.7.</span> <span class="nav-text">2.6 基于Java API手动加载XML配置文件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">入境繁华</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"jaylonzheng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("83pavVlI9KtTV5H0NspTyEn7-gzGzoHsz", "7MniqoeFo7WOp06lmwzbhnyS");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

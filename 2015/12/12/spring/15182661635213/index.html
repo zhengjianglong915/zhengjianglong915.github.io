@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Spring," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="面向对象的弊端是,但多个不具有继承关系的对象要引入同一个公共行为时,如日志,安全检测时,我们只能为每个对象引入公共行为,这样程序出现大量的重复代码,不利于维护.OOP允许你定义从上到下的关系，但并不适合定义从左到右的关系,所以加入了面向方面编程,AOP所关注的方向是横向的,OOP关注的方向时纵向的">
+<meta name="keywords" content="Java,Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring源码学习--AOP之动态代理">
+<meta property="og:url" content="http://zhengjianglong.cn/2015/12/12/spring/15182661635213/index.html">
+<meta property="og:site_name" content="入境繁华">
+<meta property="og:description" content="面向对象的弊端是,但多个不具有继承关系的对象要引入同一个公共行为时,如日志,安全检测时,我们只能为每个对象引入公共行为,这样程序出现大量的重复代码,不利于维护.OOP允许你定义从上到下的关系，但并不适合定义从左到右的关系,所以加入了面向方面编程,AOP所关注的方向是横向的,OOP关注的方向时纵向的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-10T12:37:51.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring源码学习--AOP之动态代理">
+<meta name="twitter:description" content="面向对象的弊端是,但多个不具有继承关系的对象要引入同一个公共行为时,如日志,安全检测时,我们只能为每个对象引入公共行为,这样程序出现大量的重复代码,不利于维护.OOP允许你定义从上到下的关系，但并不适合定义从左到右的关系,所以加入了面向方面编程,AOP所关注的方向是横向的,OOP关注的方向时纵向的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhengjianglong.cn/2015/12/12/spring/15182661635213/"/>
+
+
+
+
+
+  <title>Spring源码学习--AOP之动态代理 | 入境繁华</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">入境繁华</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">不积跬步无以至千里</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/12/spring/15182661635213/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring源码学习--AOP之动态代理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-12-12T12:47:14+08:00">
+                2015-12-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/12/spring/15182661635213/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/12/spring/15182661635213/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/12/12/spring/15182661635213/" class="leancloud_visitors" data-flag-title="Spring源码学习--AOP之动态代理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+               <!-- 面向对象的弊端是,但多个不具有继承关系的对象要引入同一个公共行为时,如日志,安全检测时,我们只能为每个对象引入公共行为,这样程序出现大量的重复代码,不利于维护.OOP允许你定义从上到下的关系，但并不适合定义从左到右的关系,所以加入了面向方面编程,AOP所关注的方向是横向的,OOP关注的方向时纵向的 文章中删除 -->
+                 
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>OOP引入封装、继承和多态性等概念来建立一种对象层次结构，用以模拟公共行为的一个集合。当我们需要为分散的对象引入公共行为（日志、安全、事务）的时候，OOP则显得无能为力.在OOP设计中，它导致了大量代码的重复，模块间的藕合度高，而不利于各个模块的重用。<br>AOP技术则恰恰相反，它利用一种称为“横切”的技术，剖解开封装的对象内部，并将那些影响了多个类的公共行为封装到一个可重用模块，并将其名为“Aspect”，即方面。所谓“方面”，简单地说，就是将那些与业务无关，却为业务模块所共同调用的逻辑或责任封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可操作性和可维护性。AOP代表的是一个横向的关系，如果说“对象”是一个空心的圆柱体，其中封装的是对象的属性和行为；那么面向方面编程的方法，就仿佛一把利刃，将这些空心圆柱体剖开，以获得其内部的消息。而剖开的切面，也就是所谓的“方面”了。然后它又以巧夺天功的妙手将这些剖开的切面复原，不留痕迹。<br>使用“横切”技术，AOP把软件系统分为两个部分：核心业务逻辑组件和横切关注点。横切关注点模块化为特殊的类，这些类被称为“切面”，好处：1.横切关注点都集中于一块，不会出现大量重复代码；2.核心模块只关注核心功能的代码，模块间藕合度降低。<br>实现AOP的技术，主要分为两大类：一是采用动态代理技术，利用截取消息的方式，对该消息进行装饰，以取代原有对象行为的执行；二是采用静态织入的方式，引入特定的语法创建“方面”，从而使得编译器可以在编译期间织入有关“方面”的代码。本文是介绍动态代理技术的实现原理.</p>
+<h2 id="AOP相关概念"><a href="#AOP相关概念" class="headerlink" title="AOP相关概念"></a>AOP相关概念</h2><p><strong>方面（Aspect）</strong>：一个关注点的模块化，这个关注点实现可能另外横切多个对象。事务管理是J2EE应用中一个很好的横切关注点例子。方面用Spring的 Advisor或拦截器实现。<br><strong>连接点（Joinpoint）</strong>: 程序执行过程中明确的点，如方法的调用或特定的异常被抛出。<br><strong>通知（Advice）</strong>: 在特定的连接点，AOP框架执行的动作。各种类型的通知包括“around”、“before”和“throws”通知。通知类型将在下面讨论。许多AOP框架包括Spring都是以拦截器做通知模型，维护一个“围绕”连接点的拦截器链。Spring中定义了4个advice.Interception Around(MethodInterceptor)、Before(MethodBeforeAdvice)、After Returning(AfterReturningAdvice)、After(AfterAdvice)。<br><strong>切入点（Pointcut）</strong>: 指定一个通知将被引发的一系列连接点的集合。AOP框架必须允许开发者指定切入点：例如，使用正则表达式。 Spring定义了Pointcut接口，用来组合MethodMatcher和ClassFilter，可以通过名字很清楚的理解， MethodMatcher是用来检查目标类的方法是否可以被应用此通知，而ClassFilter是用来检查Pointcut是否应该应用到目标类上<br><strong>引入（Introduction）</strong>: 添加方法或字段到被通知的类。 Spring允许引入新的接口到任何被通知的对象。例如，你可以使用一个引入使任何对象实现 IsModified接口，来简化缓存。Spring中要使用Introduction, 可有通过DelegatingIntroductionInterceptor来实现通知，通过DefaultIntroductionAdvisor来配置Advice和代理类要实现的接口<br><strong>目标对象（Target Object）</strong>: 包含连接点的对象。也被称作被通知或被代理对象。POJO<br><strong>AOP代理（AOP Proxy）</strong>: AOP框架创建的对象，包含通知。 在Spring中，AOP代理可以是JDK动态代理或者CGLIB代理。<br><strong>织入（Weaving）</strong>: 组装方面来创建一个被通知对象。这可以在编译时完成（例如使用AspectJ编译器），也可以在运行时完成。Spring和其他纯Java AOP框架一样，在运行时完成织入。</p>
+<h2 id="如何使用Spring-AOP"><a href="#如何使用Spring-AOP" class="headerlink" title="如何使用Spring AOP"></a>如何使用Spring AOP</h2><p>配置可以通过xml文件来进行，大概有四种方式：</p>
+<ol>
+<li>配置ProxyFactoryBean，显式地设置advisors, advice, target等</li>
+<li>配置AutoProxyCreator，这种方式下，还是如以前一样使用定义的bean，但是从容器中获得的其实已经是代理对象</li>
+<li>通过<aop:config>来配置</aop:config></li>
+<li>通过<aop: aspectj-autoproxy="">来配置，使用AspectJ的注解来标识通知及切入点</aop:></li>
+</ol>
+<h2 id="AOP-的实现原理"><a href="#AOP-的实现原理" class="headerlink" title="AOP 的实现原理"></a>AOP 的实现原理</h2><p>Spring AOP 的实现原理其实很简单：AOP 框架负责动态地生成 AOP 代理类，这个代理类的方法则由 Advice 和回调目标对象的方法所组成,并将该对象可作为目标对象使用。AOP 代理包含了目标对象的全部方法，但 AOP 代理中的方法与目标对象的方法存在差异，AOP 方法在特定切入点添加了增强处理，并回调了目标对象的方法。</p>
+<p>Spring AOP使用动态代理技术在运行期织入增强代码。使用两种代理机制：基于JDK的动态代理（JDK本身只提供接口的代理）；基于CGlib的动态代理。</p>
+<ol>
+<li>JDK的动态代理主要涉及java.lang.reflect包中的两个类：Proxy和InvocationHandler。其中InvocationHandler只是一个接口，可以通过实现该接口定义横切逻辑，并通过反射机制调用目标类的代码，动态的将横切逻辑与业务逻辑织在一起。而Proxy利用InvocationHandler动态创建一个符合某一接口的实例，生成目标类的代理对象。<br><strong>其代理对象必须是某个接口的实现,它是通过在运行期间创建一个接口的实现类来完成对目标对象的代理.只能实现接口的类生成代理,而不能针对类</strong></li>
+<li>CGLib采用底层的字节码技术，为一个类创建子类，并在子类中采用方法拦截的技术拦截所有父类的调用方法，并顺势织入横切逻辑.它运行期间生成的代理对象是目标类的扩展子类.所以无法通知final的方法,因为它们不能被覆写.<strong>是针对类实现代理,主要是为指定的类生成一个子类,覆盖其中方法.</strong></li>
+</ol>
+<h2 id="AOP的实现"><a href="#AOP的实现" class="headerlink" title="AOP的实现"></a>AOP的实现</h2><p>在bean的加载过程中会调用后置处理器的postProcessAfterInitialization()方法,这过程也是Spring AOP实现的入口. AOP的自动代理创建类AnnotationAwareAspectJAutoProxyCreator就是一个后置处理器, 如果当前bean适合被代理的话,就会解析和获取所有适合当前bean的增强器,并利用这些增强器为该bean动态生成代理对象. </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//如果存在增强方法则创建代理 *** AbstractAdvisorAutoProxyCreator</span><br><span class="line">Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);</span><br><span class="line">//如果获取到了增强则需要针对增强创建代理 ***</span><br><span class="line">if (specificInterceptors != DO_NOT_PROXY) &#123;</span><br><span class="line">	this.advisedBeans.put(cacheKey, Boolean.TRUE);</span><br><span class="line">	//创建代理 ** </span><br><span class="line">	Object proxy = createProxy(bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));</span><br><span class="line">	this.proxyTypes.put(cacheKey, proxy.getClass());</span><br><span class="line">	return proxy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>增强器的解析和获取过程中,为了避免每次解析增强器,spring为缓存第一次解析得到的所有增强器,当需要对加载的bean进行代理时,首先会获取这些增强器,并从中筛选出适合当前bean的增强器.对于注解方式的AOP,spring首先会获取所有的bean,从这些bean中筛选出带有@Aspect 注解的类,并获取这些类上的所有切点信息并生成增强器,如果配置了延迟初始化那么需要在增强器链的首位插入同步实例化增强器以保证增强使用之前的实例化,然后是对DeclareParents注解的获取.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//　获取所有的增强器　***</span><br><span class="line">// 注解的在 AnnotationAwareAspectJAutoProxyCreator 中实现</span><br><span class="line">List&lt;Advisor&gt; candidateAdvisors = findCandidateAdvisors();</span><br><span class="line">// 过滤得到可用的增强器　***</span><br><span class="line">List&lt;Advisor&gt; eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);</span><br></pre></td></tr></table></figure>
+<p>接下来会根据获取的增强器为bean动态创建代理类,spring中设计过多的拦截器,增强方法,增强器等方式对逻辑进行增强,所以首先将这些统一封装成Advisor来进行代理创建.创建过程会根据spring配置选择动态代理创建方式,如果目标对象实现了接口,默认情况下使用JDK动态代理实现AOP,如果proxy-target-class设置为true或者使用了优化策略那么会使用CGLIB来创建动态代理.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) &#123;</span><br><span class="line">	Class&lt;?&gt; targetClass = config.getTargetClass();</span><br><span class="line">	if (targetClass == null) &#123;</span><br><span class="line">		throw new AopConfigException(&quot;TargetSource cannot determine target class: &quot; +</span><br><span class="line">				&quot;Either an interface or a target is required for proxy creation.&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) &#123;</span><br><span class="line">		//JDK 代理</span><br><span class="line">		return new JdkDynamicAopProxy(config);</span><br><span class="line">	&#125;</span><br><span class="line">	// CGLIB代理</span><br><span class="line">	return new ObjenesisCglibAopProxy(config);</span><br><span class="line">&#125;</span><br><span class="line">else &#123;</span><br><span class="line">	return new JdkDynamicAopProxy(config);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="JDK-动态代理"><a href="#JDK-动态代理" class="headerlink" title="JDK 动态代理"></a>JDK 动态代理</h3><p>JDK动态代理是通过JdkDynamicAopProxy类实现,该类实现了InvocationHandler接口.invoke方法实现了增强器织入的主要逻辑.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line">public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">	MethodInvocation invocation;</span><br><span class="line">	Object oldProxy = null;</span><br><span class="line">	boolean setProxyContext = false;</span><br><span class="line"></span><br><span class="line">	TargetSource targetSource = this.advised.targetSource;</span><br><span class="line">	Class&lt;?&gt; targetClass = null;</span><br><span class="line">	Object target = null;</span><br><span class="line"></span><br><span class="line">	try &#123;</span><br><span class="line">		//equals方法处理</span><br><span class="line">		if (!this.equalsDefined &amp;&amp; AopUtils.isEqualsMethod(method)) &#123;</span><br><span class="line">			// The target does not implement the equals(Object) method itself.</span><br><span class="line">			return equals(args[0]);</span><br><span class="line">		&#125;</span><br><span class="line">		//hashCode方法处理</span><br><span class="line">		if (!this.hashCodeDefined &amp;&amp; AopUtils.isHashCodeMethod(method)) &#123;</span><br><span class="line">			// The target does not implement the hashCode() method itself.</span><br><span class="line">			return hashCode();</span><br><span class="line">		&#125;</span><br><span class="line">	</span><br><span class="line">		/*</span><br><span class="line">		 * Class类的isAssignableFrom(Class cls)方法,直接反射调用,不应用通知  </span><br><span class="line">		 */</span><br><span class="line">		if (!this.advised.opaque &amp;&amp; method.getDeclaringClass().isInterface() &amp;&amp;</span><br><span class="line">				method.getDeclaringClass().isAssignableFrom(Advised.class)) &#123;</span><br><span class="line">			// Service invocations on ProxyConfig with the proxy config...</span><br><span class="line">			return AopUtils.invokeJoinpointUsingReflection(this.advised, method, args);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		Object retVal;</span><br><span class="line">		//有时候目标对象内部的自我调用将无法实施切面中的增强则需要通过此属性暴露代理</span><br><span class="line">		if (this.advised.exposeProxy) &#123;</span><br><span class="line">			// Make invocation available if necessary.</span><br><span class="line">			oldProxy = AopContext.setCurrentProxy(proxy);</span><br><span class="line">			setProxyContext = true;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		</span><br><span class="line">		target = targetSource.getTarget();</span><br><span class="line">		if (target != null) &#123;</span><br><span class="line">			targetClass = target.getClass();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		// Get the interception chain for this method.</span><br><span class="line">		//获取当期方法的拦截器链 </span><br><span class="line">		List&lt;Object&gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);</span><br><span class="line"></span><br><span class="line">		// Check whether we have any advice. If we don&apos;t, we can fallback on direct</span><br><span class="line">		// reflective invocation of the target, and avoid creating a MethodInvocation.</span><br><span class="line">		if (chain.isEmpty()) &#123;</span><br><span class="line">			</span><br><span class="line">			//如果没有发现任何拦截器那么直接调用切点方法</span><br><span class="line">			retVal = AopUtils.invokeJoinpointUsingReflection(target, method, args);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			//将拦截器封装在ReflectiveMethodInvocation</span><br><span class="line">			//以便于使用其proceed进行链接表用拦截器</span><br><span class="line">		</span><br><span class="line">			// We need to create a method invocation...</span><br><span class="line">			invocation = new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);</span><br><span class="line">			// Proceed to the joinpoint through the interceptor chain.</span><br><span class="line">			//执行拦截器链</span><br><span class="line">			retVal = invocation.proceed();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		// Massage return value if necessary.</span><br><span class="line">		Class&lt;?&gt; returnType = method.getReturnType();</span><br><span class="line">		if (retVal != null &amp;&amp; retVal == target &amp;&amp; returnType.isInstance(proxy) &amp;&amp;</span><br><span class="line">				!RawTargetAccess.class.isAssignableFrom(method.getDeclaringClass())) &#123;</span><br><span class="line">	</span><br><span class="line">			retVal = proxy;</span><br><span class="line">		&#125;</span><br><span class="line">		else if (retVal == null &amp;&amp; returnType != Void.TYPE &amp;&amp; returnType.isPrimitive()) &#123;</span><br><span class="line">			throw new AopInvocationException(</span><br><span class="line">					&quot;Null return value from advice does not match primitive return type for: &quot; + method);</span><br><span class="line">		&#125;</span><br><span class="line">		return retVal;</span><br><span class="line">	&#125;</span><br><span class="line">	finally &#123;</span><br><span class="line">		if (target != null &amp;&amp; !targetSource.isStatic()) &#123;</span><br><span class="line">			// Must have come from TargetSource.</span><br><span class="line">			targetSource.releaseTarget(target);</span><br><span class="line">		&#125;</span><br><span class="line">		if (setProxyContext) &#123;</span><br><span class="line">			// Restore old proxy.</span><br><span class="line">			AopContext.setCurrentProxy(oldProxy);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>主流程可以简述为：获取可以应用到此方法上的通知链（Interceptor Chain）,如果有,则应用通知,并执行joinpoint; 如果没有,则直接反射执行joinpoint。AOP的会将所有的增强器转化为拦截器,通过拦截器的调用来完成增强器的织入.所以首先需要将所有的Advisor转化为拦截器,这步是在 this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass)完成的.接下来判断如果拦截器链如果为空的话说明不需要对bean进行增强,否则调用proceed().</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public Object proceed() throws Throwable &#123;</span><br><span class="line">	//执行完所有增强后执行切点方法</span><br><span class="line">	//	We start with an index of -1 and increment early.</span><br><span class="line">	if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) &#123;</span><br><span class="line">		return invokeJoinpoint();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//获取下一个要执行的拦截器</span><br><span class="line">	Object interceptorOrInterceptionAdvice =</span><br><span class="line">			this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);</span><br><span class="line">	if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) &#123;</span><br><span class="line">		// Evaluate dynamic method matcher here: static part will already have</span><br><span class="line">		// been evaluated and found to match.</span><br><span class="line">		//动态匹配</span><br><span class="line">		InterceptorAndDynamicMethodMatcher dm =</span><br><span class="line">				(InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;</span><br><span class="line">		if (dm.methodMatcher.matches(this.method, this.targetClass, this.arguments)) &#123;</span><br><span class="line">			//执行当前Intercetpor  (在拦截器内部会递归的调用该类的proceed方法)</span><br><span class="line">			return dm.interceptor.invoke(this);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			// Dynamic matching failed.</span><br><span class="line">			// Skip this interceptor and invoke the next in the chain.</span><br><span class="line">			 //动态匹配失败时,略过当前Intercetpor,调用下一个Interceptor  </span><br><span class="line">			return proceed();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	else &#123;</span><br><span class="line">		//普通拦截器直接调用 </span><br><span class="line">	</span><br><span class="line">		// It&apos;s an interceptor, so we just invoke it: The pointcut will have</span><br><span class="line">		// been evaluated statically before this object was constructed.</span><br><span class="line">		//将this 作为参数传递以保证当前实例中调用链的执行</span><br><span class="line">		return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>内部其实是再递归的调用拦截器链上的拦截器. 这里需要说明的是 MethodInterceptor方法内部的调用,我们先看AspectJAfterAdvice这个类,这个类是一个拦截器实现了MethodInterceptor,其核心方法时invoke(MethodInvocation mi).</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public Object invoke(MethodInvocation mi) throws Throwable &#123;</span><br><span class="line">	try &#123;</span><br><span class="line">		return mi.proceed();</span><br><span class="line">	&#125;</span><br><span class="line">	finally &#123;</span><br><span class="line">		invokeAdviceMethod(getJoinPointMatch(), null, null);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法需要传入一个MethodInvocation.上文中的proceed()所在类ReflectiveMethodInvocation就是一个MethodInvocation.所以在proceed()有这样一段代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);</span><br></pre></td></tr></table></figure>
+<p>其实就是将自己传入到该方法中,便于在invoke()方法中递归的调用 proceed()方法.使得整个拦截器链上的拦截器都能得到执行.</p>
+<h3 id="CGLIB-动态代理"><a href="#CGLIB-动态代理" class="headerlink" title="CGLIB 动态代理"></a>CGLIB 动态代理</h3><p>ObjenesisCglibAopProxy 是CGLIB的实现类, 因为CGLIB动态代理的创建方式与JDK有所不同,所以在实现过程中也存在一些差异.首先CGLIB会将增强器封装在DynamicAdvisedInterceptor类中,并通过Enhancer创建一个代理. CGLIB在调用代理时会激活DynamicAdvisedInterceptor中的intercept方法,CGLIB的代理核心代码也在这里实现.<br>该方法内部的实现和JDK方式实现的invoke方法大同小异,都是先构造拦截器链.唯一不同的是JDK方式是直接构造ReflectiveMethodInvocation,而在cglib中使用CgligMehodInvocation,该类是ReflectiveMethodInvocation的子类,其中的proceed()方法没有重写,意味着这个方法的调用都是一样的.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable &#123;</span><br><span class="line">	Object oldProxy = null;</span><br><span class="line">	boolean setProxyContext = false;</span><br><span class="line">	Class&lt;?&gt; targetClass = null;</span><br><span class="line">	Object target = null;</span><br><span class="line">	try &#123;</span><br><span class="line">		if (this.advised.exposeProxy) &#123;</span><br><span class="line">			// Make invocation available if necessary.</span><br><span class="line">			oldProxy = AopContext.setCurrentProxy(proxy);</span><br><span class="line">			setProxyContext = true;</span><br><span class="line">		&#125;</span><br><span class="line">		// May be null. Get as late as possible to minimize the time we</span><br><span class="line">		// &quot;own&quot; the target, in case it comes from a pool...</span><br><span class="line">		target = getTarget();</span><br><span class="line">		if (target != null) &#123;</span><br><span class="line">			targetClass = target.getClass();</span><br><span class="line">		&#125;</span><br><span class="line">		//获取拦截器链</span><br><span class="line">		List&lt;Object&gt; chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);</span><br><span class="line">		Object retVal;</span><br><span class="line">		// Check whether we only have one InvokerInterceptor: that is,</span><br><span class="line">		// no real advice, but just reflective invocation of the target.</span><br><span class="line">		if (chain.isEmpty() &amp;&amp; Modifier.isPublic(method.getModifiers())) &#123;</span><br><span class="line">			// We can skip creating a MethodInvocation: just invoke the target directly.</span><br><span class="line">			// Note that the final invoker must be an InvokerInterceptor, so we know</span><br><span class="line">			// it does nothing but a reflective operation on the target, and no hot</span><br><span class="line">			// swapping or fancy proxying.</span><br><span class="line">			retVal = methodProxy.invoke(target, args);</span><br><span class="line">		&#125;</span><br><span class="line">		else &#123;</span><br><span class="line">			// We need to create a method invocation...</span><br><span class="line">			// CglibMethodInvocation 时ReflectiveMethodInvocation的子类,没有覆盖proceed()方法.	</span><br><span class="line">			retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();</span><br><span class="line">		&#125;</span><br><span class="line">		retVal = processReturnType(proxy, target, method, retVal);</span><br><span class="line">		return retVal;</span><br><span class="line">	&#125;</span><br><span class="line">	finally &#123;</span><br><span class="line">		if (target != null) &#123;</span><br><span class="line">			releaseTarget(target);</span><br><span class="line">		&#125;</span><br><span class="line">		if (setProxyContext) &#123;</span><br><span class="line">			// Restore old proxy.</span><br><span class="line">			AopContext.setCurrentProxy(oldProxy);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="http://blog.csdn.net/moreevan/article/details/11977115" target="_blank" rel="noopener">http://blog.csdn.net/moreevan/article/details/11977115</a><br><a href="http://my.oschina.net/elain/blog/382494" target="_blank" rel="noopener">http://my.oschina.net/elain/blog/382494</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    郑江龙
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://zhengjianglong.cn/2015/12/12/spring/15182661635213/" title="Spring源码学习--AOP之动态代理">http://zhengjianglong.cn/2015/12/12/spring/15182661635213/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/09/spring/15182663161229/" rel="next" title="Spring源码学习--bean加载之单例创建和获取">
+                <i class="fa fa-chevron-left"></i> Spring源码学习--bean加载之单例创建和获取
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/12/14/reading/15182673070265/" rel="prev" title="Spring源码学习--springMVC">
+                Spring源码学习--springMVC <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2015/12/12/spring/15182661635213/"
+     data-title="Spring源码学习--AOP之动态代理"
+     data-content=""
+     data-url="http://zhengjianglong.cn/2015/12/12/spring/15182661635213/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2015/12/12/spring/15182661635213/"
+           data-title="Spring源码学习--AOP之动态代理" data-url="http://zhengjianglong.cn/2015/12/12/spring/15182661635213/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/author.jpeg"
+                alt="入境繁华" />
+            
+              <p class="site-author-name" itemprop="name">入境繁华</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/JohnZhengHub" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/2711026835/profile?topnav=1&wvr=6" target="_blank" title="weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/ru-jing-fan-hua" target="_blank" title="zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhengjianglong@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://luodw.cc/" title="罗道文的博客" target="_blank">罗道文的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://youbingchenyoubing.leanote.com/" title="陈友兵的博客" target="_blank">陈友兵的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://arebya.github.io/" title="施亚的博客" target="_blank">施亚的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://rannn.cc/" title="陶然的博客" target="_blank">陶然的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOP相关概念"><span class="nav-number">2.</span> <span class="nav-text">AOP相关概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何使用Spring-AOP"><span class="nav-number">3.</span> <span class="nav-text">如何使用Spring AOP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOP-的实现原理"><span class="nav-number">4.</span> <span class="nav-text">AOP 的实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOP的实现"><span class="nav-number">5.</span> <span class="nav-text">AOP的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK-动态代理"><span class="nav-number">5.1.</span> <span class="nav-text">JDK 动态代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CGLIB-动态代理"><span class="nav-number">5.2.</span> <span class="nav-text">CGLIB 动态代理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">入境繁华</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"jaylonzheng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("83pavVlI9KtTV5H0NspTyEn7-gzGzoHsz", "7MniqoeFo7WOp06lmwzbhnyS");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -282,7 +282,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/06/docs/15182671836958/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182668701104/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -301,7 +301,517 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/12/06/docs/15182671836958/" itemprop="url">Spring源码学习---Bean的解析和注册</a></h1>
+                <a class="post-title-link" href="/2015/12/08/spring/15182668701104/" itemprop="url">Spring源码学习--bean加载步骤</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-12-08T21:20:01+08:00">
+                2015-12-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/08/spring/15182668701104/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182668701104/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/12/08/spring/15182668701104/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载步骤">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          之前博客的内容包括xml的加载，bean的解析和注册以及用户自定义标签的解析和注册都是容器初始化的内容．bean的加载时在这个基础上进行的，bean的加载过程比较复杂，设计的代码量很多．所以准备将bean的加载过程分为多个部分进行讲解．今天主要讲解bean的加载大致流程，之后会对每个步骤再进行细化讲解．
+          <!--noindex-->
+
+          <!--  删除 查看全文按钮
+          <div class="post-button text-center">
+            <a class="btn" href="/2015/12/08/spring/15182668701104/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          -->
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182666246971/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2015/12/08/spring/15182666246971/" itemprop="url">Spring源码学习--bean加载之bean的实例化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-12-08T21:20:01+08:00">
+                2015-12-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/08/spring/15182666246971/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182666246971/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/12/08/spring/15182666246971/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载之bean的实例化">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          加载过程有一个高频率使用的方法，getObjectForBeanInstance(),无论是从缓存中获取bean还是根据不同的scope策略加载bean,得到的bean都要调用该方法检测正确性，其实就是检测当前bean是否是FactoryBean,如果是那么需要调用FactoryBean实例中的getObject()获得真正想要的bean
+          <!--noindex-->
+
+          <!--  删除 查看全文按钮
+          <div class="post-button text-center">
+            <a class="btn" href="/2015/12/08/spring/15182666246971/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          -->
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/07/spring/15182670020260/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2015/12/07/spring/15182670020260/" itemprop="url">Spring源码学习--自定义标签解析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-12-07T15:34:40+08:00">
+                2015-12-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/07/spring/15182670020260/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/07/spring/15182670020260/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/12/07/spring/15182670020260/" class="leancloud_visitors" data-flag-title="Spring源码学习--自定义标签解析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          bean的解析分为默认标签和用户自定义标签，前面已经讲过了默认标签的解析过程．今天就针对自定义标签的解析进行一个介绍．郝佳在sping源码深度解析书中说自定义标签主要是为了支持系统可配置功能．我个人认为，自定义标签的使用是为了提高spring的灵活性，用户可以根据自己的应用特点来定义标签和解析器．spring除了管理默认标签的bean还可以为客户管理这些bean.
+          <!--noindex-->
+
+          <!--  删除 查看全文按钮
+          <div class="post-button text-center">
+            <a class="btn" href="/2015/12/07/spring/15182670020260/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          -->
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/06/spring/15182671836958-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2015/12/06/spring/15182671836958-1/" itemprop="url">Spring源码学习---Bean的解析和注册</a></h1>
         
 
         <div class="post-meta">
@@ -354,8 +864,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/12/06/docs/15182671836958/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/06/docs/15182671836958/" itemprop="commentCount"></span>
+                <a href="/2015/12/06/spring/15182671836958-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/06/spring/15182671836958-1/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -363,7 +873,7 @@
 
           
           
-             <span id="/2015/12/06/docs/15182671836958/" class="leancloud_visitors" data-flag-title="Spring源码学习---Bean的解析和注册">
+             <span id="/2015/12/06/spring/15182671836958-1/" class="leancloud_visitors" data-flag-title="Spring源码学习---Bean的解析和注册">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -400,7 +910,7 @@
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/12/06/docs/15182671836958/">
+            <a class="btn" href="/2015/12/06/spring/15182671836958-1/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -452,7 +962,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/06/docs/15182657110957/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/06/spring/15182657110957/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -471,7 +981,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/12/06/docs/15182657110957/" itemprop="url">Spring源码学习--DTD和XML Schema介绍</a></h1>
+                <a class="post-title-link" href="/2015/12/06/spring/15182657110957/" itemprop="url">Spring源码学习--DTD和XML Schema介绍</a></h1>
         
 
         <div class="post-meta">
@@ -524,8 +1034,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/12/06/docs/15182657110957/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/06/docs/15182657110957/" itemprop="commentCount"></span>
+                <a href="/2015/12/06/spring/15182657110957/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/06/spring/15182657110957/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -533,7 +1043,7 @@
 
           
           
-             <span id="/2015/12/06/docs/15182657110957/" class="leancloud_visitors" data-flag-title="Spring源码学习--DTD和XML Schema介绍">
+             <span id="/2015/12/06/spring/15182657110957/" class="leancloud_visitors" data-flag-title="Spring源码学习--DTD和XML Schema介绍">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -570,7 +1080,7 @@
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/12/06/docs/15182657110957/">
+            <a class="btn" href="/2015/12/06/spring/15182657110957/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -622,7 +1132,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/04/docs/15182675521562/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/04/reading/15182675521562/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -641,7 +1151,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/12/04/docs/15182675521562/" itemprop="url">Spring源码学习--IoC容器设计原理</a></h1>
+                <a class="post-title-link" href="/2015/12/04/reading/15182675521562/" itemprop="url">Spring源码学习--IoC容器设计原理</a></h1>
         
 
         <div class="post-meta">
@@ -694,8 +1204,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/12/04/docs/15182675521562/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/04/docs/15182675521562/" itemprop="commentCount"></span>
+                <a href="/2015/12/04/reading/15182675521562/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/04/reading/15182675521562/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -703,7 +1213,7 @@
 
           
           
-             <span id="/2015/12/04/docs/15182675521562/" class="leancloud_visitors" data-flag-title="Spring源码学习--IoC容器设计原理">
+             <span id="/2015/12/04/reading/15182675521562/" class="leancloud_visitors" data-flag-title="Spring源码学习--IoC容器设计原理">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -740,7 +1250,7 @@
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/12/04/docs/15182675521562/">
+            <a class="btn" href="/2015/12/04/reading/15182675521562/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -792,7 +1302,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/02/docs/15182659920552/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/02/spring/15182659920552/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -811,7 +1321,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/12/02/docs/15182659920552/" itemprop="url">Spring与设计模式---代理模式</a></h1>
+                <a class="post-title-link" href="/2015/12/02/spring/15182659920552/" itemprop="url">Spring与设计模式---代理模式</a></h1>
         
 
         <div class="post-meta">
@@ -864,8 +1374,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/12/02/docs/15182659920552/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/02/docs/15182659920552/" itemprop="commentCount"></span>
+                <a href="/2015/12/02/spring/15182659920552/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/02/spring/15182659920552/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -873,7 +1383,7 @@
 
           
           
-             <span id="/2015/12/02/docs/15182659920552/" class="leancloud_visitors" data-flag-title="Spring与设计模式---代理模式">
+             <span id="/2015/12/02/spring/15182659920552/" class="leancloud_visitors" data-flag-title="Spring与设计模式---代理模式">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -910,7 +1420,7 @@
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/12/02/docs/15182659920552/">
+            <a class="btn" href="/2015/12/02/spring/15182659920552/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -962,7 +1472,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/02/docs/15182676342071/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/02/reading/15182676342071/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -981,7 +1491,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/12/02/docs/15182676342071/" itemprop="url">Spring与设计模式---代理模式</a></h1>
+                <a class="post-title-link" href="/2015/12/02/reading/15182676342071/" itemprop="url">Spring与设计模式---代理模式</a></h1>
         
 
         <div class="post-meta">
@@ -1034,8 +1544,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/12/02/docs/15182676342071/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/02/docs/15182676342071/" itemprop="commentCount"></span>
+                <a href="/2015/12/02/reading/15182676342071/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/02/reading/15182676342071/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1043,7 +1553,7 @@
 
           
           
-             <span id="/2015/12/02/docs/15182676342071/" class="leancloud_visitors" data-flag-title="Spring与设计模式---代理模式">
+             <span id="/2015/12/02/reading/15182676342071/" class="leancloud_visitors" data-flag-title="Spring与设计模式---代理模式">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1080,7 +1590,7 @@
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/12/02/docs/15182676342071/">
+            <a class="btn" href="/2015/12/02/reading/15182676342071/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1132,7 +1642,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/11/29/docs/15182644516666/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/11/29/arch/15182644516666/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -1151,7 +1661,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/11/29/docs/15182644516666/" itemprop="url">高性能页面加载技术--BigPipe设计原理及Java简单实现</a></h1>
+                <a class="post-title-link" href="/2015/11/29/arch/15182644516666/" itemprop="url">高性能页面加载技术--BigPipe设计原理及Java简单实现</a></h1>
         
 
         <div class="post-meta">
@@ -1204,8 +1714,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/11/29/docs/15182644516666/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/29/docs/15182644516666/" itemprop="commentCount"></span>
+                <a href="/2015/11/29/arch/15182644516666/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/29/arch/15182644516666/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1213,7 +1723,7 @@
 
           
           
-             <span id="/2015/11/29/docs/15182644516666/" class="leancloud_visitors" data-flag-title="高性能页面加载技术--BigPipe设计原理及Java简单实现">
+             <span id="/2015/11/29/arch/15182644516666/" class="leancloud_visitors" data-flag-title="高性能页面加载技术--BigPipe设计原理及Java简单实现">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1250,7 +1760,7 @@
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/11/29/docs/15182644516666/">
+            <a class="btn" href="/2015/11/29/arch/15182644516666/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1302,7 +1812,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/10/31/docs/15183678615630/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/10/31/reading/15183678615630/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -1321,7 +1831,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/10/31/docs/15183678615630/" itemprop="url">关于写博客的一些思考</a></h1>
+                <a class="post-title-link" href="/2015/10/31/reading/15183678615630/" itemprop="url">关于写博客的一些思考</a></h1>
         
 
         <div class="post-meta">
@@ -1374,8 +1884,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/10/31/docs/15183678615630/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/31/docs/15183678615630/" itemprop="commentCount"></span>
+                <a href="/2015/10/31/reading/15183678615630/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/31/reading/15183678615630/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1383,7 +1893,7 @@
 
           
           
-             <span id="/2015/10/31/docs/15183678615630/" class="leancloud_visitors" data-flag-title="关于写博客的一些思考">
+             <span id="/2015/10/31/reading/15183678615630/" class="leancloud_visitors" data-flag-title="关于写博客的一些思考">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1420,517 +1930,7 @@
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/10/31/docs/15183678615630/">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          -->
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/10/31/docs/15182653611074/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="入境繁华">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/author.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="入境繁华">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/10/31/docs/15182653611074/" itemprop="url">如何高效学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-31T13:17:00+08:00">
-                2015-10-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/阅读/" itemprop="url" rel="index">
-                    <span itemprop="name">阅读</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2015/10/31/docs/15182653611074/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/31/docs/15182653611074/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2015/10/31/docs/15182653611074/" class="leancloud_visitors" data-flag-title="如何高效学习">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          最近接触了很多关于学习方法的内容，比如在kindle上无意中找到的一本杂志，里面提到如何提高阅读能力.在作者推荐下又看了《开动大脑》，接触了一些关于学习的理论，作者在书中提出了思维导图的学习方法，这种方法平时大家应该都有接触，平时我比较习惯叫做知识框架图．今天看了一期《鸿观》里面也提到了学习方法，发现不管知知乎上看到还是书里提供的，还是微信朋友圈看到那些关于学习方法的内容几乎都很相似，其核心都是在强调知识间的联系．于是想总结下这段时间看到的学习方法．
-          <!--noindex-->
-
-          <!--  删除 查看全文按钮
-          <div class="post-button text-center">
-            <a class="btn" href="/2015/10/31/docs/15182653611074/">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          -->
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/10/23/docs/15182655244947/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="入境繁华">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/author.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="入境繁华">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/10/23/docs/15182655244947/" itemprop="url">什么情况下可以使用 Spring Web Flow</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-23T20:31:00+08:00">
-                2015-10-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2015/10/23/docs/15182655244947/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/23/docs/15182655244947/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2015/10/23/docs/15182655244947/" class="leancloud_visitors" data-flag-title="什么情况下可以使用 Spring Web Flow">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          Spring Web Flow 提供了描述业务流程的抽象能力，但对一种 Web 开发技术而言，仅有这些是不够的。同时， Spring Web Flow 是不是能够取代其他 Web MVC 技术？或者在任何情况下都应优先使用 Spring Web Flow ？要回答这些问题，先来看一下 Spring Web Flow 所着力解决的技术问题。
-          <!--noindex-->
-
-          <!--  删除 查看全文按钮
-          <div class="post-button text-center">
-            <a class="btn" href="/2015/10/23/docs/15182655244947/">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          -->
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/10/22/docs/15182658250785/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="入境繁华">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/author.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="入境繁华">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2015/10/22/docs/15182658250785/" itemprop="url">Spring WeB Flow知识梳理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-10-22T20:31:00+08:00">
-                2015-10-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/spring/" itemprop="url" rel="index">
-                    <span itemprop="name">spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2015/10/22/docs/15182658250785/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/10/22/docs/15182658250785/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2015/10/22/docs/15182658250785/" class="leancloud_visitors" data-flag-title="Spring WeB Flow知识梳理">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          平时中我们尝具有一些流程化的操作，如上网购物时，一般时选中物品-->加入购物车-->提交订单-->付款．在spring里就专门为这种流程化操作提供一个Web框架,Spring  Web Flow，它时Spring的一个子项目，并不属于Spring的一部分. Spring Web Flow能够很好的将流程的定义，实现流程的行为及视图分开，进行解耦．而strust２的流程定义很难做到流程定义和实现行为分开，而且其流程定义的比较散散乱，一般时将流程定义在实现中，即在action内部通过判断条件进行流程跳转．strust２的流程流程可读性差
-          <!--noindex-->
-
-          <!--  删除 查看全文按钮
-          <div class="post-button text-center">
-            <a class="btn" href="/2015/10/22/docs/15182658250785/">
+            <a class="btn" href="/2015/10/31/reading/15183678615630/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2023,7 +2023,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">44</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2034,7 +2034,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2045,7 +2045,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2107,6 +2107,10 @@
                 
                   <li class="links-of-blogroll-item">
                     <a href="https://arebya.github.io/" title="施亚的博客" target="_blank">施亚的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://rannn.cc/" title="陶然的博客" target="_blank">陶然的博客</a>
                   </li>
                 
               </ul>
