@@ -109,23 +109,23 @@
 
 
 
-<meta name="description" content="Mybatis作为一个数据操作中间件，支持三种内建三种类型的DataSource， 即 UNPOOLED, POOLED 和 JNDI.">
+<meta name="description" content="Mybatis作为一个数据操作中间件，支持三种内建三种类型的DataSource， 即 UNPOOLED, POOLED 和 JNDI. 本文主要是分析Mybatis源码中如何支持和实现三种数据源、数据库连接、以及事务。">
 <meta name="keywords" content="“Mybatis”">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mybatis源码解析(4)--数据源与连接池">
 <meta property="og:url" content="http://zhengjianglong.cn/2018/02/16/mybatis/mybatis_datasource/index.html">
 <meta property="og:site_name" content="入境繁华">
-<meta property="og:description" content="Mybatis作为一个数据操作中间件，支持三种内建三种类型的DataSource， 即 UNPOOLED, POOLED 和 JNDI.">
+<meta property="og:description" content="Mybatis作为一个数据操作中间件，支持三种内建三种类型的DataSource， 即 UNPOOLED, POOLED 和 JNDI. 本文主要是分析Mybatis源码中如何支持和实现三种数据源、数据库连接、以及事务。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15187485821776.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15187499434511.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15187642454569.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15187444882302.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15187705777701.jpg">
-<meta property="og:updated_time" content="2018-02-16T09:09:42.000Z">
+<meta property="og:updated_time" content="2018-02-16T09:16:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mybatis源码解析(4)--数据源与连接池">
-<meta name="twitter:description" content="Mybatis作为一个数据操作中间件，支持三种内建三种类型的DataSource， 即 UNPOOLED, POOLED 和 JNDI.">
+<meta name="twitter:description" content="Mybatis作为一个数据操作中间件，支持三种内建三种类型的DataSource， 即 UNPOOLED, POOLED 和 JNDI. 本文主要是分析Mybatis源码中如何支持和实现三种数据源、数据库连接、以及事务。">
 <meta name="twitter:image" content="http://zhengjianglong.cn/images/15187485821776.jpg">
 
 
@@ -386,7 +386,7 @@
 
           
               <div class="post-description">
-               <!-- Mybatis作为一个数据操作中间件，支持三种内建三种类型的DataSource， 即 UNPOOLED, POOLED 和 JNDI. 文章中删除 -->
+               <!-- Mybatis作为一个数据操作中间件，支持三种内建三种类型的DataSource， 即 UNPOOLED, POOLED 和 JNDI. 本文主要是分析Mybatis源码中如何支持和实现三种数据源、数据库连接、以及事务。 文章中删除 -->
                  
               </div>
           
@@ -558,6 +558,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/02/16/mybatis/mybatis_source_cache/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -663,7 +667,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-count">48</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
