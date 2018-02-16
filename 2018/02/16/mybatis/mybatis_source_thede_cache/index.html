@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="“Mybatis”, "缓存机制"" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别，通过Cache接口实现类不同的组合，对Cache的可控性也更强。">
+<meta name="keywords" content="“Mybatis”, &quot;缓存机制&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis源码解析(6)--二级缓存机制">
+<meta property="og:url" content="http://zhengjianglong.cn/2018/02/16/mybatis/mybatis_source_thede_cache/index.html">
+<meta property="og:site_name" content="入境繁华">
+<meta property="og:description" content="MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别，通过Cache接口实现类不同的组合，对Cache的可控性也更强。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15187872767895.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/2018/02/16/mybatis/mybatis_source_thede_cache/images/15187877760873.jpg">
+<meta property="og:updated_time" content="2018-02-16T16:12:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mybatis源码解析(6)--二级缓存机制">
+<meta name="twitter:description" content="MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别，通过Cache接口实现类不同的组合，对Cache的可控性也更强。">
+<meta name="twitter:image" content="http://zhengjianglong.cn/images/15187872767895.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhengjianglong.cn/2018/02/16/mybatis/mybatis_source_thede_cache/"/>
+
+
+
+
+
+  <title>Mybatis源码解析(6)--二级缓存机制 | 入境繁华</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">入境繁华</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">不积跬步无以至千里</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/16/mybatis/mybatis_source_thede_cache/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Mybatis源码解析(6)--二级缓存机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-16T23:17:32+08:00">
+                2018-02-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mybatis源码解析/" itemprop="url" rel="index">
+                    <span itemprop="name">Mybatis源码解析</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/16/mybatis/mybatis_source_thede_cache/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/16/mybatis/mybatis_source_thede_cache/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/02/16/mybatis/mybatis_source_thede_cache/" class="leancloud_visitors" data-flag-title="Mybatis源码解析(6)--二级缓存机制">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+               <!-- MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别，通过Cache接口实现类不同的组合，对Cache的可控性也更强。 文章中删除 -->
+                 
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="一-介绍"><a href="#一-介绍" class="headerlink" title="一. 介绍"></a>一. 介绍</h1><p>二级缓存使得多个SqlSession之间可以共享缓存。开启二级缓存后，会使用CachingExecutor装饰Executor。数据的查询执行的流程就是<strong>二级缓存 -&gt; 一级缓存 -&gt; 数据库</strong>。具体流程如图所示：<br><img src="/images/15187872767895.jpg" alt=""></p>
+<p>当开一个会话时，一个SqlSession对象会使用一个Executor对象来完成会话操作，MyBatis的二级缓存机制的关键就是对这个Executor对象做文章。如果用户配置了”cacheEnabled=true”，那么MyBatis在为SqlSession对象创建Executor对象时，会对Executor对象加上一个装饰者：CachingExecutor，这时SqlSession使用CachingExecutor对象来完成操作请求。CachingExecutor对于查询请求，会先判断该查询请求在Application级别的二级缓存中是否有缓存结果，如果有查询结果，则直接返回缓存结果；如果缓存中没有，再交给真正的Executor对象来完成查询操作，之后CachingExecutor会将真正Executor返回的查询结果放置到缓存中，然后在返回给用户。</p>
+<p>CachingExecutor是Executor的装饰者，以增强Executor的功能，使其具有缓存查询的功能，这里用到了设计模式中的装饰者模式.</p>
+<h2 id="1-1-二级对象分类"><a href="#1-1-二级对象分类" class="headerlink" title="1.1 二级对象分类"></a>1.1 二级对象分类</h2><p>MyBatis并不是简单地对整个Application就只有一个Cache缓存对象，它将缓存划分的更细，即是<strong>Mapper(namespace)</strong>级别的.因此二级缓存可以分为两类:</p>
+<ul>
+<li>为每一个Mapper分配一个Cache缓存对象.（使用<cache>节点配置）</cache></li>
+<li>多个Mapper共用一个Cache缓存对象（使用<cache-ref>节点配置）</cache-ref></li>
+</ul>
+<p>  对于每一个Mapper.xml,如果在其中使用了<cache> 节点，则MyBatis会为这个Mapper创建一个Cache缓存对象。</cache></p>
+<h3 id="1-1-1-一个Mapper分配一个Cache（）"><a href="#1-1-1-一个Mapper分配一个Cache（）" class="headerlink" title="1.1.1 一个Mapper分配一个Cache（）"></a>1.1.1 一个Mapper分配一个Cache（<cache>）</cache></h3><p>MyBatis将Application级别的二级缓存细分到Mapper级别，即对于每一个Mapper.xml,如果在其中使用了<cache> 节点，则MyBatis会为这个Mapper创建一个Cache缓存对象.每一个Cache对象，都会有一个自己所属的namespace命名空间，并且会将Mapper的 namespace作为它们的ID；</cache></p>
+<h3 id="1-1-2-多个Mapper共用一个Cache"><a href="#1-1-2-多个Mapper共用一个Cache" class="headerlink" title="1.1.2 多个Mapper共用一个Cache ()"></a>1.1.2 多个Mapper共用一个Cache (<cache-ref>)</cache-ref></h3><p>使用<cache-ref namespace="">节点，来指定你的这个Mapper使用到了哪一个Mapper的Cache缓存, 这样能够做到多个Mapper共用一个Cache缓存对象。</cache-ref></p>
+<p><img src="images/15187877760873.jpg" alt=""></p>
+<h2 id="1-2-如何设置"><a href="#1-2-如何设置" class="headerlink" title="1.2 如何设置"></a>1.2 如何设置</h2><p>如何设置才能使Mybatis具有二级缓存功能呢？</p>
+<ol>
+<li><p>开启MyBatis支持二级缓存的总开关：cacheEnabled=true</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;setting name=&quot;cacheEnabled&quot; value=&quot;true&quot;/&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在Mapper.xml文件中，对需要支持二级缓存的select语句配置了<cache> 或<cached-ref>节点；</cached-ref></cache></p>
+</li>
+<li>并且该select语句的参数 useCache=true<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// StudentMapper.xml</span><br><span class="line">&lt;select id=&quot;findAllStudents&quot; resultMap=&quot;StudentResult&quot; useCache=&quot;true&quot;&gt;</span><br><span class="line">       SELECT * FROM STUDENTS</span><br><span class="line">       &lt;cache&gt; </span><br><span class="line">&lt;/select&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p> Mybatis对缓存的支持非常灵活，MyBatis提供了三种二级缓存的选择:</p>
+<ol>
+<li><strong>MyBatis自身提供的缓存实现</strong>；并提供了各种缓存刷新策略如LRU，FIFO等等；</li>
+<li><strong>用户自定义的Cache接口实现</strong>；用户实现org.apache.ibatis.cache.Cache接口，然后将Cache实现类配置在<cache type="">节点的type属性上即可；type中可以设置别名或者全限定名。</cache></li>
+<li><strong>跟第三方内存缓存库的集成</strong>；</li>
+</ol>
+<h1 id="二-二级缓存实现原理"><a href="#二-二级缓存实现原理" class="headerlink" title="二. 二级缓存实现原理"></a>二. 二级缓存实现原理</h1><p>MyBatis二级缓存的一个重要特点：<strong>即松散的Cache缓存管理和维护</strong>。一个Mapper中定义的增删改查操作只能影响到自己关联的Cache对象，不影响其他Cache对象。因此Mapper之间的缓存关系比较松散，相互关联的程度比较弱。</p>
+<p>如果多个Mapper公共一个缓存，是否任意一个Mapper更新操作都会清空缓存呢？比如AMapper和BMapper共用一个Cache对象，AMapper和BMapper的任意的更新操作都会将共用的Cache清空，这样会频繁地清空Cache，导致Cache实际的命中率和使用率就变得很低了，所以这种策略实际情况下是不可取的。因此Mybatis采用另一套策略，当对于某些表执行了更新(update、delete、insert)操作后，不是清空所有缓存，而是清空跟这些表有关联的查询语句所造成的缓存；</p>
+<p>MyBatis二级缓存的工作流程和前文提到的一级缓存类似，只是在一级缓存处理前，用CachingExecutor装饰了BaseExecutor的子类，在委托具体职责给delegate之前，实现了二级缓存的查询和写入功能。</p>
+<h2 id="2-1-数据结构"><a href="#2-1-数据结构" class="headerlink" title="2.1 数据结构"></a>2.1 数据结构</h2><p>二级缓存是针对Mapper级别，对每个mapper都会创建一个缓存。MappedStatement对象存储一个mapper的所有信息，并保存在configuration中。在MappedStatement类中利用cache字段来存储缓存信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private Cache cache;</span><br></pre></td></tr></table></figure>
+<h2 id="2-2-初始化CachingExecutor"><a href="#2-2-初始化CachingExecutor" class="headerlink" title="2.2 初始化CachingExecutor"></a>2.2 初始化CachingExecutor</h2><p>CachingExecutor的初始化需要从sqlSession对象的创建说起，一个sqlSession对象拥有一个Executor对象。因此在创建sqlSession的同时创建Executor对象。下面是SqlSession对象的创建代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 创建SqlSession   sqlSessionFactory是DefaultSqlSessionFactory</span><br><span class="line">SqlSession sqlSession = sqlSessionFactory.openSession();</span><br></pre></td></tr></table></figure>
+<p>SqlSession在创建过程的时候会同时创建事务和Executor：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">final Environment environment = configuration.getEnvironment();</span><br><span class="line">// 创建事务</span><br><span class="line">final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);</span><br><span class="line">tx = transactionFactory.newTransaction(environment.getDataSource(), level, autoCommit);</span><br><span class="line">// 创建 Executor</span><br><span class="line">final Executor executor = configuration.newExecutor(tx, execType);</span><br><span class="line">return new DefaultSqlSession(configuration, executor, autoCommit);</span><br></pre></td></tr></table></figure>
+<p>configuration的newExecutor方法会根据缓execType类型创建不同的Excutor, 最后如果发现配置中开启了二级缓存，那么就会用装饰器CachingExecutor包装executor，具体代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public Executor newExecutor(Transaction transaction, ExecutorType executorType) &#123;</span><br><span class="line">    executorType = executorType == null ? defaultExecutorType : executorType;</span><br><span class="line">    executorType = executorType == null ? ExecutorType.SIMPLE : executorType;</span><br><span class="line">    Executor executor;</span><br><span class="line">    if (ExecutorType.BATCH == executorType) &#123;</span><br><span class="line">      executor = new BatchExecutor(this, transaction);</span><br><span class="line">    &#125; else if (ExecutorType.REUSE == executorType) &#123;</span><br><span class="line">      executor = new ReuseExecutor(this, transaction);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      executor = new SimpleExecutor(this, transaction);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 如果设定了二级缓存，用装饰类CachingExecutor进行包装</span><br><span class="line">    if (cacheEnabled) &#123;</span><br><span class="line">      executor = new CachingExecutor(executor);</span><br><span class="line">    &#125;</span><br><span class="line">    executor = (Executor) interceptorChain.pluginAll(executor);</span><br><span class="line">    return executor;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-3-CachingExecutor缓存获取过程"><a href="#2-3-CachingExecutor缓存获取过程" class="headerlink" title="2.3 CachingExecutor缓存获取过程"></a>2.3 CachingExecutor缓存获取过程</h2><p>源码分析从CachingExecutor的query方法展开，在query方法主要逻辑：</p>
+<ol>
+<li>首先会从MappedStatement中获得在配置初始化时赋予的Cache</li>
+<li><p>如果Cache不为空，表示该MappedStatement开启了二级缓存设置：</p>
+<ol>
+<li>判断是否需要刷新缓存</li>
+<li>处理存储过程</li>
+<li>从二级缓存中获取数据，如果存在则直接返回。</li>
+<li>否则交给BaseExecutor执行，一级缓存逻辑一致。并将结果存到二级缓存中</li>
+</ol>
+</li>
+<li>否则交给BaseExecutor执行，一级缓存逻辑一致</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public &lt;E&gt; List&lt;E&gt; query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)</span><br><span class="line">      throws SQLException &#123;</span><br><span class="line">    // 1. 获取二级缓存器，缓存是针对mapper的，因此直接从MappedStatement中获取</span><br><span class="line">    Cache cache = ms.getCache();</span><br><span class="line">    if (cache != null) &#123;</span><br><span class="line">      // 2. 判断是否需要刷新缓存</span><br><span class="line">      flushCacheIfRequired(ms);</span><br><span class="line"></span><br><span class="line">      if (ms.isUseCache() &amp;&amp; resultHandler == null) &#123;</span><br><span class="line">        // 3. ensureNoOutParams主要是用来处理存储过程的</span><br><span class="line">        ensureNoOutParams(ms, boundSql);</span><br><span class="line">        @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">        // 4. 从tcm中获取缓存的</span><br><span class="line">        List&lt;E&gt; list = (List&lt;E&gt;) tcm.getObject(cache, key);</span><br><span class="line">        if (list == null) &#123;</span><br><span class="line">          /**</span><br><span class="line">           * 否则和之前一级缓存思路一样。</span><br><span class="line">           * 1. 先查询一级缓存是存在，如果存在，则直接返回</span><br><span class="line">           * 2. 如果不存在，则从数据库查询，并保存到一级缓存中</span><br><span class="line">           */</span><br><span class="line">          list = delegate.&lt;E&gt; query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);</span><br><span class="line"></span><br><span class="line">          /**</span><br><span class="line">           * 保存到二级缓存中</span><br><span class="line">           */</span><br><span class="line">          tcm.putObject(cache, key, list); // issue #578 and #116</span><br><span class="line">        &#125;</span><br><span class="line">        return list;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    /**</span><br><span class="line">     * 如果这个MapperStatement没开启缓存：</span><br><span class="line">     * 否则和之前一级缓存思路一样。</span><br><span class="line">     * 1. 先查询一级缓存是存在，如果存在，则直接返回</span><br><span class="line">     * 2. 如果不存在，则从数据库查询，并保存到一级缓存中</span><br><span class="line">     */</span><br><span class="line">    return delegate.&lt;E&gt; query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>这里有几个重要的点需要说明：</p>
+<ol>
+<li>Cache何时被设置到MappedStatement中</li>
+<li>flushCacheIfRequired如何刷新缓存</li>
+<li>TransactionalCacheManager如何获取缓存数据，即上文的tcm</li>
+</ol>
+<h3 id="2-3-1-初始化MappedStatement的Cache"><a href="#2-3-1-初始化MappedStatement的Cache" class="headerlink" title="2.3.1 初始化MappedStatement的Cache"></a>2.3.1 初始化MappedStatement的Cache</h3><p>XMLMapperBuilder在解析Mapper.xml文件时，如果遇到<cache> 或<cache-ref>节点，则在解析的时候会初始化Cache:</cache-ref></cache></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 给定命名空间的缓存配置。</span><br><span class="line">cacheElement(context.evalNode(&quot;cache&quot;));</span><br><span class="line">// 其他命名空间缓存配置的引用</span><br><span class="line">cacheRefElement(context.evalNode(&quot;cache-ref&quot;));</span><br></pre></td></tr></table></figure>
+<p><cache> 节点会调用builderAssistant对象，构建缓存对象，并保存到MappedStatement对象和configuration对象中:</cache></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);</span><br></pre></td></tr></table></figure>
+<p>保存到configuration中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">configuration.addCache(cache);</span><br></pre></td></tr></table></figure>
+<p> <cache-ref>节点在解析的时候，会根据ref引用的namespace，则直接从configuration中获取缓存对象。然后保持到MappedStatement对象中。</cache-ref></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cache cache = configuration.getCache(namespace);</span><br></pre></td></tr></table></figure>
+<p>Mybatis内置了多个Cache实现，Cache采用了装饰类模式。以下是具体这些Cache实现类的介绍，他们的组合为Cache赋予了不同的能力:</p>
+<ul>
+<li>SynchronizedCache： 同步Cache，实现比较简单，直接使用synchronized修饰方法。</li>
+<li>LoggingCache： 日志功能，装饰类，用于记录缓存的命中率，如果开启了DEBUG模式，则会输出命中率日志。</li>
+<li>SerializedCache： 序列化功能，将值序列化后存到缓存中。该功能用于缓存返回一份实例的Copy，用于保存线程安全。</li>
+<li>LruCache： 采用了Lru算法的Cache实现，移除最近最少使用的key/value。</li>
+<li>PerpetualCache： 作为为最基础的缓存类，底层实现比较简单，直接使用了HashMap。</li>
+</ul>
+<h3 id="2-3-2-TransactionalCacheManager"><a href="#2-3-2-TransactionalCacheManager" class="headerlink" title="2.3.2 TransactionalCacheManager"></a>2.3.2 TransactionalCacheManager</h3><p>MyBatis的CachingExecutor持有了TransactionalCacheManager，即上述代码中的tcm。可以理解使负责管理TransactionalCache的类。TransactionalCache是什么呢？ TransactionalCache实现了Cache接口，CachingExecutor会默认使用他包装初始生成的Cache，作用是如果事务提交，对缓存的操作才会生效，如果事务回滚或者不提交事务，则不对缓存产生影响。TransactionalCache是一个事务类型的缓存实现类，用于维护二级缓存数据。因此，TransactionalCacheManager中持有了一个Map，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private final Map&lt;Cache, TransactionalCache&gt; transactionalCaches = new HashMap&lt;Cache, TransactionalCache&gt;();</span><br></pre></td></tr></table></figure>
+<p>这个Map保存了Cache和用TransactionalCache包装后的Cache的映射关系，通过Cache获取对应的缓存TransactionalCache。用Cache表示一个namespace对应的缓存，作为该namespace的唯一标志。而TransactionalCache是该namespace真正的缓存。</p>
+<p>TransactionalCacheManager中有几个重要的方法：</p>
+<ul>
+<li>commit 提交</li>
+<li>rollback 回滚</li>
+<li><p>putObject 存放到二级缓存中。首先获取获取Cache对应的TransactionalCache，然后将数据保存到TransactionalCache中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public void putObject(Cache cache, CacheKey key, Object value) &#123;</span><br><span class="line">  getTransactionalCache(cache).putObject(key, value);</span><br><span class="line">&#125;</span><br><span class="line">private TransactionalCache getTransactionalCache(Cache cache) &#123;</span><br><span class="line">  TransactionalCache txCache = transactionalCaches.get(cache);</span><br><span class="line">  if (txCache == null) &#123;</span><br><span class="line">    txCache = new TransactionalCache(cache);</span><br><span class="line">    transactionalCaches.put(cache, txCache);</span><br><span class="line">  &#125;</span><br><span class="line">  return txCache;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>getObject 获取二级缓存数据。putObject类似，首先获取TransactionalCache，然后在从TransactionalCache中根据key去查询数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public Object getObject(Cache cache, CacheKey key) &#123;</span><br><span class="line">  return getTransactionalCache(cache).getObject(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>clear 清空缓存，清空了需要在提交时加入缓存的列表，同时设定提交时清空缓存。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public void clear(Cache cache) &#123;</span><br><span class="line">  getTransactionalCache(cache).clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="2-3-3-flushCacheIfRequired"><a href="#2-3-3-flushCacheIfRequired" class="headerlink" title="2.3.3 flushCacheIfRequired"></a>2.3.3 flushCacheIfRequired</h3><p>在默认的设置中SELECT语句不会刷新缓存，insert/update/delte会刷新缓存。这边直接调用了TransactionalCacheManager的clear方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private void flushCacheIfRequired(MappedStatement ms) &#123;</span><br><span class="line">    Cache cache = ms.getCache();</span><br><span class="line">    if (cache != null &amp;&amp; ms.isFlushCacheRequired()) &#123;      </span><br><span class="line">      tcm.clear(cache);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-4-二级缓存生命周期"><a href="#2-4-二级缓存生命周期" class="headerlink" title="2.4 二级缓存生命周期"></a>2.4 二级缓存生命周期</h2><h1 id="总计"><a href="#总计" class="headerlink" title="总计"></a>总计</h1><ul>
+<li>MyBatis的二级缓存相对于一级缓存来说，实现了SqlSession之间缓存数据的共享，同时粒度更加的细，能够到namespace级别，通过Cache接口实现类不同的组合，对Cache的可控性也更强。</li>
+<li>MyBatis在多表查询时，极大可能会出现脏数据，有设计上的缺陷，安全使用二级缓存的条件比较苛刻。</li>
+<li>在分布式环境下，由于默认的MyBatis Cache实现都是基于本地的，分布式环境下必然会出现读取到脏数据，需要使用集中式缓存将MyBatis的Cache接口实现，有一定的开发成本，直接使用Redis,Memcached等分布式缓存可能成本更低，安全性也更高。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>Mybatis 源码</li>
+<li><a href="https://tech.meituan.com/mybatis_cache.html" target="_blank" rel="noopener">聊聊MyBatis缓存机制</a> | 包含了很多验证示例，源码分析</li>
+<li><a href="https://www.jianshu.com/p/cf32582169db" target="_blank" rel="noopener">终结篇：MyBatis原理深入解析（三）</a></li>
+<li><a href="https://www.cnblogs.com/cuibin/articles/6827116.html" target="_blank" rel="noopener">mybatis一级与二级缓存详解</a> </li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    入境繁华
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://zhengjianglong.cn/2018/02/16/mybatis/mybatis_source_thede_cache/" title="Mybatis源码解析(6)--二级缓存机制">http://zhengjianglong.cn/2018/02/16/mybatis/mybatis_source_thede_cache/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码解析/" rel="tag"># 源码解析</a>
+          
+            <a href="/tags/Mybatis/" rel="tag"># Mybatis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/16/mybatis/mybatis_source_cache/" rel="next" title="Mybatis源码解析(5)--一级缓存机制">
+                <i class="fa fa-chevron-left"></i> Mybatis源码解析(5)--一级缓存机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2018/02/16/mybatis/mybatis_source_thede_cache/"
+     data-title="Mybatis源码解析(6)--二级缓存机制"
+     data-content=""
+     data-url="http://zhengjianglong.cn/2018/02/16/mybatis/mybatis_source_thede_cache/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2018/02/16/mybatis/mybatis_source_thede_cache/"
+           data-title="Mybatis源码解析(6)--二级缓存机制" data-url="http://zhengjianglong.cn/2018/02/16/mybatis/mybatis_source_thede_cache/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/author.jpeg"
+                alt="入境繁华" />
+            
+              <p class="site-author-name" itemprop="name">入境繁华</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">48</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/JohnZhengHub" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/2711026835/profile?topnav=1&wvr=6" target="_blank" title="weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/ru-jing-fan-hua" target="_blank" title="zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhengjianglong@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://luodw.cc/" title="罗道文的博客" target="_blank">罗道文的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://youbingchenyoubing.leanote.com/" title="陈友兵的博客" target="_blank">陈友兵的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://arebya.github.io/" title="施亚的博客" target="_blank">施亚的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://rannn.cc/" title="陶然的博客" target="_blank">陶然的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一-介绍"><span class="nav-number">1.</span> <span class="nav-text">一. 介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-二级对象分类"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 二级对象分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-一个Mapper分配一个Cache（）"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1.1 一个Mapper分配一个Cache（）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-多个Mapper共用一个Cache"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.1.2 多个Mapper共用一个Cache ()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-如何设置"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 如何设置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二-二级缓存实现原理"><span class="nav-number">2.</span> <span class="nav-text">二. 二级缓存实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-数据结构"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-初始化CachingExecutor"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 初始化CachingExecutor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-CachingExecutor缓存获取过程"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 CachingExecutor缓存获取过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-初始化MappedStatement的Cache"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.3.1 初始化MappedStatement的Cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-TransactionalCacheManager"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.3.2 TransactionalCacheManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-flushCacheIfRequired"><span class="nav-number">2.3.3.</span> <span class="nav-text">2.3.3 flushCacheIfRequired</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-二级缓存生命周期"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 二级缓存生命周期</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总计"><span class="nav-number">3.</span> <span class="nav-text">总计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">入境繁华</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"jaylonzheng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("83pavVlI9KtTV5H0NspTyEn7-gzGzoHsz", "7MniqoeFo7WOp06lmwzbhnyS");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
