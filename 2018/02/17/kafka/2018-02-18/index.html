@@ -113,14 +113,14 @@
 <meta name="keywords" content="“Kafka”, &quot;源码学习&quot;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Kafka源码解析(2)--分布式下的高可用性">
-<meta property="og:url" content="http://zhengjianglong.cn/2018/02/16/kafka/2018-02-18/index.html">
+<meta property="og:url" content="http://zhengjianglong.cn/2018/02/17/kafka/2018-02-18/index.html">
 <meta property="og:site_name" content="入境繁华">
 <meta property="og:description" content="Kafka具有分布性，使得Kafka具有良好的拓展能力和容错能力、高可用性。为了避免一个或几个broker宕机，其上所有的Partition数据都不可被消费，而导致部分服务不可用。Kafka为每个partition设置多个replication, 均衡分布在集群中的多个broker中。即使一个或几个broker不可工作时，其他broker因为存储partition数据副本，所以整个集群可以正常工作">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15189454567278.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15189636136065.jpg">
-<meta property="og:image" content="http://zhengjianglong.cn/2018/02/16/kafka/2018-02-18/images/15189498382789.jpg">
-<meta property="og:updated_time" content="2018-02-18T15:33:58.000Z">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15189498382789.jpg">
+<meta property="og:updated_time" content="2018-02-20T08:52:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kafka源码解析(2)--分布式下的高可用性">
 <meta name="twitter:description" content="Kafka具有分布性，使得Kafka具有良好的拓展能力和容错能力、高可用性。为了避免一个或几个broker宕机，其上所有的Partition数据都不可被消费，而导致部分服务不可用。Kafka为每个partition设置多个replication, 均衡分布在集群中的多个broker中。即使一个或几个broker不可工作时，其他broker因为存储partition数据副本，所以整个集群可以正常工作">
@@ -154,7 +154,7 @@
 
 
 
-  <link rel="canonical" href="http://zhengjianglong.cn/2018/02/16/kafka/2018-02-18/"/>
+  <link rel="canonical" href="http://zhengjianglong.cn/2018/02/17/kafka/2018-02-18/"/>
 
 
 
@@ -287,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/16/kafka/2018-02-18/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/17/kafka/2018-02-18/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -316,8 +316,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-16T23:17:32+08:00">
-                2018-02-16
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-17T23:17:32+08:00">
+                2018-02-17
               </time>
             
 
@@ -357,8 +357,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/02/16/kafka/2018-02-18/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/16/kafka/2018-02-18/" itemprop="commentCount"></span>
+                <a href="/2018/02/17/kafka/2018-02-18/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/17/kafka/2018-02-18/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -366,7 +366,7 @@
 
           
           
-             <span id="/2018/02/16/kafka/2018-02-18/" class="leancloud_visitors" data-flag-title="Kafka源码解析(2)--分布式下的高可用性">
+             <span id="/2018/02/17/kafka/2018-02-18/" class="leancloud_visitors" data-flag-title="Kafka源码解析(2)--分布式下的高可用性">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -450,7 +450,7 @@
 <p>此时，broker-0、broker-1、broker-2、broker-3、broker-4分别作为StartingBroker再次被轮询一次，如果还有其它Partition，则继续轮询，IncreasingShift递增为3，依次类推。</p>
 <p><strong>为什么要随机选取StartingBroker，而不是每次都选取broker-0作为StartingBroker?</strong><br>因为分配过程是以轮询方式进行的，如果每次都选取broker-0作为StartingBroker，那么Brokers列表中的前面部分将有可能被分配相对比较多的Partition Replicas，从而导致这部分Brokers负载较高，随机选取可以保证相对比较好的均匀效果。</p>
 <p><strong>为什么Brokers列表每次轮询一次，IncreasingShift值都需要递增1？</strong><br>如果主题的分区数多于Broker的个数，如果不在用递增方式则多余的分区都是倾向于将分区发放置在前几个Broker上，同样导致负载不均衡。Kafka Topic Partition数目较多的情况下，间隔量随着每一个轮询递增能够更好的均匀分配Replica。</p>
-<h2 id="4-3-分布式系统下数据发布到读取过程"><a href="#4-3-分布式系统下数据发布到读取过程" class="headerlink" title="4.3 分布式系统下数据发布到读取过程"></a>4.3 分布式系统下数据发布到读取过程</h2><p><img src="images/15189498382789.jpg" alt=""></p>
+<h2 id="4-3-分布式系统下数据发布到读取过程"><a href="#4-3-分布式系统下数据发布到读取过程" class="headerlink" title="4.3 分布式系统下数据发布到读取过程"></a>4.3 分布式系统下数据发布到读取过程</h2><p><img src="/images/15189498382789.jpg" alt=""></p>
 <ol>
 <li>Producer要发布数据时首先去Zookeeper中获取partition对应的Leader</li>
 <li>Producer像Leader的broker发送消息，Leader会将该消息写入其本地Log。</li>
@@ -495,7 +495,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://zhengjianglong.cn/2018/02/16/kafka/2018-02-18/" title="Kafka源码解析(2)--分布式下的高可用性">http://zhengjianglong.cn/2018/02/16/kafka/2018-02-18/</a>
+    <a href="http://zhengjianglong.cn/2018/02/17/kafka/2018-02-18/" title="Kafka源码解析(2)--分布式下的高可用性">http://zhengjianglong.cn/2018/02/17/kafka/2018-02-18/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -525,8 +525,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/02/16/mybatis/mybatis_source_thede_cache/" rel="next" title="Mybatis源码解析(6)--二级缓存机制">
-                <i class="fa fa-chevron-left"></i> Mybatis源码解析(6)--二级缓存机制
+              <a href="/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/" rel="next" title="Kafka源码解析(1)--揭开面纱">
+                <i class="fa fa-chevron-left"></i> Kafka源码解析(1)--揭开面纱
               </a>
             
           </div>
@@ -556,10 +556,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2018/02/16/kafka/2018-02-18/"
+        <div class="ds-share flat" data-thread-key="2018/02/17/kafka/2018-02-18/"
      data-title="Kafka源码解析(2)--分布式下的高可用性"
      data-content=""
-     data-url="http://zhengjianglong.cn/2018/02/16/kafka/2018-02-18/">
+     data-url="http://zhengjianglong.cn/2018/02/17/kafka/2018-02-18/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -587,8 +587,8 @@
 
   
     <div class="comments" id="comments">
-      <div class="ds-thread" data-thread-key="2018/02/16/kafka/2018-02-18/"
-           data-title="Kafka源码解析(2)--分布式下的高可用性" data-url="http://zhengjianglong.cn/2018/02/16/kafka/2018-02-18/">
+      <div class="ds-thread" data-thread-key="2018/02/17/kafka/2018-02-18/"
+           data-title="Kafka源码解析(2)--分布式下的高可用性" data-url="http://zhengjianglong.cn/2018/02/17/kafka/2018-02-18/">
       </div>
     </div>
 

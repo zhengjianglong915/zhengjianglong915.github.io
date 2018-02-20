@@ -282,7 +282,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182664558778/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182666246971/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -301,7 +301,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/12/08/spring/15182664558778/" itemprop="url">Spring源码学习--bean加载之名字转化与缓存中获取单例bean</a></h1>
+                <a class="post-title-link" href="/2015/12/08/spring/15182666246971/" itemprop="url">Spring源码学习--bean加载之bean的实例化</a></h1>
         
 
         <div class="post-meta">
@@ -354,8 +354,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/12/08/spring/15182664558778/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182664558778/" itemprop="commentCount"></span>
+                <a href="/2015/12/08/spring/15182666246971/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182666246971/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -363,7 +363,7 @@
 
           
           
-             <span id="/2015/12/08/spring/15182664558778/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载之名字转化与缓存中获取单例bean">
+             <span id="/2015/12/08/spring/15182666246971/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载之bean的实例化">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -395,12 +395,12 @@
 
       
         
-          本文主要介绍bean加载的前两个步骤，即名字的转化和缓冲中获取单例bean.
+          加载过程有一个高频率使用的方法，getObjectForBeanInstance(),无论是从缓存中获取bean还是根据不同的scope策略加载bean,得到的bean都要调用该方法检测正确性，其实就是检测当前bean是否是FactoryBean,如果是那么需要调用FactoryBean实例中的getObject()获得真正想要的bean
           <!--noindex-->
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/12/08/spring/15182664558778/">
+            <a class="btn" href="/2015/12/08/spring/15182666246971/">
               阅读全文 &raquo;
             </a>
           </div>
