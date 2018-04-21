@@ -282,7 +282,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182664558778/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182668701104/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -301,7 +301,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/12/08/spring/15182664558778/" itemprop="url">Spring源码学习--bean加载之名字转化与缓存中获取单例bean</a></h1>
+                <a class="post-title-link" href="/2015/12/08/spring/15182668701104/" itemprop="url">Spring源码学习--bean加载步骤</a></h1>
         
 
         <div class="post-meta">
@@ -354,8 +354,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/12/08/spring/15182664558778/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182664558778/" itemprop="commentCount"></span>
+                <a href="/2015/12/08/spring/15182668701104/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182668701104/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -363,7 +363,7 @@
 
           
           
-             <span id="/2015/12/08/spring/15182664558778/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载之名字转化与缓存中获取单例bean">
+             <span id="/2015/12/08/spring/15182668701104/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载步骤">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -395,12 +395,12 @@
 
       
         
-          本文主要介绍bean加载的前两个步骤，即名字的转化和缓冲中获取单例bean.
+          之前博客的内容包括xml的加载，bean的解析和注册以及用户自定义标签的解析和注册都是容器初始化的内容．bean的加载时在这个基础上进行的，bean的加载过程比较复杂，设计的代码量很多．所以准备将bean的加载过程分为多个部分进行讲解．今天主要讲解bean的加载大致流程，之后会对每个步骤再进行细化讲解．
           <!--noindex-->
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/12/08/spring/15182664558778/">
+            <a class="btn" href="/2015/12/08/spring/15182668701104/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -622,7 +622,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182668701104/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2015/12/08/spring/15182664558778/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -641,7 +641,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2015/12/08/spring/15182668701104/" itemprop="url">Spring源码学习--bean加载步骤</a></h1>
+                <a class="post-title-link" href="/2015/12/08/spring/15182664558778/" itemprop="url">Spring源码学习--bean加载之名字转化与缓存中获取单例bean</a></h1>
         
 
         <div class="post-meta">
@@ -694,8 +694,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/12/08/spring/15182668701104/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182668701104/" itemprop="commentCount"></span>
+                <a href="/2015/12/08/spring/15182664558778/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/08/spring/15182664558778/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -703,7 +703,7 @@
 
           
           
-             <span id="/2015/12/08/spring/15182668701104/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载步骤">
+             <span id="/2015/12/08/spring/15182664558778/" class="leancloud_visitors" data-flag-title="Spring源码学习--bean加载之名字转化与缓存中获取单例bean">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -735,12 +735,12 @@
 
       
         
-          之前博客的内容包括xml的加载，bean的解析和注册以及用户自定义标签的解析和注册都是容器初始化的内容．bean的加载时在这个基础上进行的，bean的加载过程比较复杂，设计的代码量很多．所以准备将bean的加载过程分为多个部分进行讲解．今天主要讲解bean的加载大致流程，之后会对每个步骤再进行细化讲解．
+          本文主要介绍bean加载的前两个步骤，即名字的转化和缓冲中获取单例bean.
           <!--noindex-->
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2015/12/08/spring/15182668701104/">
+            <a class="btn" href="/2015/12/08/spring/15182664558778/">
               阅读全文 &raquo;
             </a>
           </div>
