@@ -282,6 +282,686 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/04/21/kafka/kafka源码解析(4)--消费者实现原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/21/kafka/kafka源码解析(4)--消费者实现原理/" itemprop="url">Kafka源码解析(4)--消费者的实现原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-21T15:40:32+08:00">
+                2018-04-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka源码解析/" itemprop="url" rel="index">
+                    <span itemprop="name">Kafka源码解析</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/21/kafka/kafka源码解析(4)--消费者实现原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/04/21/kafka/kafka源码解析(4)--消费者实现原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/21/kafka/kafka源码解析(4)--消费者实现原理/" class="leancloud_visitors" data-flag-title="Kafka源码解析(4)--消费者的实现原理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          kafka采用了消费组的概念，使得kafka同时具备了发布-订阅模式和队列模式的两者的优点，保证同一个消费组里的一个消息被只能被一个消费者消费，提高吞吐量；另一方面保证了数据的容错性，可以不同消费组可以同时消费同一个消息。保证了一条消息可以被多个消费者消费...
+          <!--noindex-->
+
+          <!--  删除 查看全文按钮
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/21/kafka/kafka源码解析(4)--消费者实现原理/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          -->
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/04/21/kafka/kafka源码解析(3)--生产者实现原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/21/kafka/kafka源码解析(3)--生产者实现原理/" itemprop="url">Kafka源码解析(3)--生产者的实现原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-21T10:40:32+08:00">
+                2018-04-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka源码解析/" itemprop="url" rel="index">
+                    <span itemprop="name">Kafka源码解析</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/21/kafka/kafka源码解析(3)--生产者实现原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/04/21/kafka/kafka源码解析(3)--生产者实现原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/21/kafka/kafka源码解析(3)--生产者实现原理/" class="leancloud_visitors" data-flag-title="Kafka源码解析(3)--生产者的实现原理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          生产者要发送消息，不是直接发送给服务端，而是先在客户端把消息放入到消息队列中，然后由一个消息发送线程从队列中拉取消息，以批量的方式发送消息给服务端。kafka生产者包括几个重要部分:记录收集器、发送线程、选择器、网络连接。
+          <!--noindex-->
+
+          <!--  删除 查看全文按钮
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/21/kafka/kafka源码解析(3)--生产者实现原理/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          -->
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/04/15/kafka/Kafka源码解析(2)--分布式下的高可用性/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/15/kafka/Kafka源码解析(2)--分布式下的高可用性/" itemprop="url">Kafka源码解析(2)--分布式下的高可用性</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-15T23:17:32+08:00">
+                2018-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka源码解析/" itemprop="url" rel="index">
+                    <span itemprop="name">Kafka源码解析</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/15/kafka/Kafka源码解析(2)--分布式下的高可用性/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/04/15/kafka/Kafka源码解析(2)--分布式下的高可用性/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/15/kafka/Kafka源码解析(2)--分布式下的高可用性/" class="leancloud_visitors" data-flag-title="Kafka源码解析(2)--分布式下的高可用性">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          Kafka具有分布性，使得Kafka具有良好的拓展能力和容错能力、高可用性。为了避免一个或几个broker宕机，其上所有的Partition数据都不可被消费，而导致部分服务不可用。Kafka为每个partition设置多个replication, 均衡分布在集群中的多个broker中。即使一个或几个broker不可工作时，其他broker因为存储partition数据副本，所以整个集群可以正常工作。
+          <!--noindex-->
+
+          <!--  删除 查看全文按钮
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/15/kafka/Kafka源码解析(2)--分布式下的高可用性/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          -->
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/04/14/kafka/kafka源码解析(1)--概述/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/04/14/kafka/kafka源码解析(1)--概述/" itemprop="url">Kafka源码解析(1)--概述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-14T10:17:32+08:00">
+                2018-04-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka源码解析/" itemprop="url" rel="index">
+                    <span itemprop="name">Kafka源码解析</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/14/kafka/kafka源码解析(1)--概述/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/04/14/kafka/kafka源码解析(1)--概述/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/14/kafka/kafka源码解析(1)--概述/" class="leancloud_visitors" data-flag-title="Kafka源码解析(1)--概述">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          Kafka是一个消息队列(MQ), 其具备分布式、高吞吐量、容错性、多副本、流式数据处理、多订阅者的特性。介绍了消息队列、kafka整体设计思路与其他消息队列的对比。
+          <!--noindex-->
+
+          <!--  删除 查看全文按钮
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/04/14/kafka/kafka源码解析(1)--概述/">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          -->
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/20/nsq/NSQ源码解析(2)-nsqlookup实现原理详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -452,7 +1132,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/18/nsq/nsq源码解析(1)--概述/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/18/nsq/NSQ源码解析(1)--设计理念浅析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -471,7 +1151,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/02/18/nsq/nsq源码解析(1)--概述/" itemprop="url">NSQ源码解析(1)--设计理念浅析</a></h1>
+                <a class="post-title-link" href="/2018/02/18/nsq/NSQ源码解析(1)--设计理念浅析/" itemprop="url">NSQ源码解析(1)--设计理念浅析</a></h1>
         
 
         <div class="post-meta">
@@ -524,8 +1204,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/02/18/nsq/nsq源码解析(1)--概述/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/18/nsq/nsq源码解析(1)--概述/" itemprop="commentCount"></span>
+                <a href="/2018/02/18/nsq/NSQ源码解析(1)--设计理念浅析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/18/nsq/NSQ源码解析(1)--设计理念浅析/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -533,7 +1213,7 @@
 
           
           
-             <span id="/2018/02/18/nsq/nsq源码解析(1)--概述/" class="leancloud_visitors" data-flag-title="NSQ源码解析(1)--设计理念浅析">
+             <span id="/2018/02/18/nsq/NSQ源码解析(1)--设计理念浅析/" class="leancloud_visitors" data-flag-title="NSQ源码解析(1)--设计理念浅析">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -570,347 +1250,7 @@
 
           <!--  删除 查看全文按钮
           <div class="post-button text-center">
-            <a class="btn" href="/2018/02/18/nsq/nsq源码解析(1)--概述/">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          -->
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/17/kafka/2018-02-18/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="入境繁华">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/author.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="入境繁华">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/17/kafka/2018-02-18/" itemprop="url">Kafka源码解析(2)--分布式下的高可用性</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-17T23:17:32+08:00">
-                2018-02-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Kafka源码解析/" itemprop="url" rel="index">
-                    <span itemprop="name">Kafka源码解析</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/17/kafka/2018-02-18/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/17/kafka/2018-02-18/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/17/kafka/2018-02-18/" class="leancloud_visitors" data-flag-title="Kafka源码解析(2)--分布式下的高可用性">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          Kafka具有分布性，使得Kafka具有良好的拓展能力和容错能力、高可用性。为了避免一个或几个broker宕机，其上所有的Partition数据都不可被消费，而导致部分服务不可用。Kafka为每个partition设置多个replication, 均衡分布在集群中的多个broker中。即使一个或几个broker不可工作时，其他broker因为存储partition数据副本，所以整个集群可以正常工作。
-          <!--noindex-->
-
-          <!--  删除 查看全文按钮
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/17/kafka/2018-02-18/">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          -->
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="入境繁华">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/author.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="入境繁华">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/" itemprop="url">Kafka源码解析(1)--揭开面纱</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-17T10:17:32+08:00">
-                2018-02-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Kafka源码解析/" itemprop="url" rel="index">
-                    <span itemprop="name">Kafka源码解析</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/17/kafka/kafka源码解析(1)--揭开面纱/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/" class="leancloud_visitors" data-flag-title="Kafka源码解析(1)--揭开面纱">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          Kafka是一个消息队列(MQ), 其具备分布式、高吞吐量、容错性、多副本、流式数据处理、多订阅者的特性。介绍了消息队列、kafka整体设计思路与其他消息队列的对比。
-          <!--noindex-->
-
-          <!--  删除 查看全文按钮
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/">
+            <a class="btn" href="/2018/02/18/nsq/NSQ源码解析(1)--设计理念浅析/">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1629,346 +1969,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/15/mybatis/Mybatis源码解析(3)--SqlSession工作过程分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="入境繁华">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/author.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="入境繁华">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/15/mybatis/Mybatis源码解析(3)--SqlSession工作过程分析/" itemprop="url">Mybatis源码解析(3)--SqlSession工作过程分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-15T13:33:09+08:00">
-                2018-02-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mybatis源码解析/" itemprop="url" rel="index">
-                    <span itemprop="name">Mybatis源码解析</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/15/mybatis/Mybatis源码解析(3)--SqlSession工作过程分析/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/15/mybatis/Mybatis源码解析(3)--SqlSession工作过程分析/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/15/mybatis/Mybatis源码解析(3)--SqlSession工作过程分析/" class="leancloud_visitors" data-flag-title="Mybatis源码解析(3)--SqlSession工作过程分析">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          上一篇博客从源码角度已经分析了Mybatis如何加载配置，如何通过配置完成Configuration的初始化工作，已经如何获得SqlSession。本文主要是分析SqlSession如何执行SQL操作。
-          <!--noindex-->
-
-          <!--  删除 查看全文按钮
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/15/mybatis/Mybatis源码解析(3)--SqlSession工作过程分析/">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          -->
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/14/mybatis/mybatis源码解析(2)--初始化/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="入境繁华">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/author.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="入境繁华">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/14/mybatis/mybatis源码解析(2)--初始化/" itemprop="url">Mybatis源码解析(2)--初始化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-14T12:12:43+08:00">
-                2018-02-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mybatis源码解析/" itemprop="url" rel="index">
-                    <span itemprop="name">Mybatis源码解析</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/14/mybatis/mybatis源码解析(2)--初始化/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/14/mybatis/mybatis源码解析(2)--初始化/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-             <span id="/2018/02/14/mybatis/mybatis源码解析(2)--初始化/" class="leancloud_visitors" data-flag-title="Mybatis源码解析(2)--初始化">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body han-init-context" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          在使用mybatis, spring等开源框架的时候,首先需要根据业务需求设置mybatis的配置，如数据源、mapper映射关系等。本文根据Mybatis源码介绍Mybatis如何完成初始化工作。
-          <!--noindex-->
-
-          <!--  删除 查看全文按钮
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/14/mybatis/mybatis源码解析(2)--初始化/">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          -->
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2023,7 +2023,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2045,7 +2045,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

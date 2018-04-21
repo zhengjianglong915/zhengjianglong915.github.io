@@ -112,8 +112,8 @@
 <meta name="description" content="Kafka是一个消息队列(MQ), 其具备分布式、高吞吐量、容错性、多副本、流式数据处理、多订阅者的特性。介绍了消息队列、kafka整体设计思路与其他消息队列的对比。">
 <meta name="keywords" content="“Kafka”, &quot;源码学习&quot;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Kafka源码解析(1)--揭开面纱">
-<meta property="og:url" content="http://zhengjianglong.cn/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/index.html">
+<meta property="og:title" content="Kafka源码解析(1)--概述">
+<meta property="og:url" content="http://zhengjianglong.cn/2018/04/14/kafka/kafka源码解析(1)--概述/index.html">
 <meta property="og:site_name" content="入境繁华">
 <meta property="og:description" content="Kafka是一个消息队列(MQ), 其具备分布式、高吞吐量、容错性、多副本、流式数据处理、多订阅者的特性。介绍了消息队列、kafka整体设计思路与其他消息队列的对比。">
 <meta property="og:locale" content="zh-Hans">
@@ -121,9 +121,9 @@
 <meta property="og:image" content="http://zhengjianglong.cn/images/15188746204041.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15188740845525.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15188808911572.jpg">
-<meta property="og:updated_time" content="2018-02-20T08:45:20.000Z">
+<meta property="og:updated_time" content="2018-04-21T09:11:19.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kafka源码解析(1)--揭开面纱">
+<meta name="twitter:title" content="Kafka源码解析(1)--概述">
 <meta name="twitter:description" content="Kafka是一个消息队列(MQ), 其具备分布式、高吞吐量、容错性、多副本、流式数据处理、多订阅者的特性。介绍了消息队列、kafka整体设计思路与其他消息队列的对比。">
 <meta name="twitter:image" content="http://zhengjianglong.cn/images/15188723719086.jpg">
 
@@ -155,13 +155,13 @@
 
 
 
-  <link rel="canonical" href="http://zhengjianglong.cn/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/"/>
+  <link rel="canonical" href="http://zhengjianglong.cn/2018/04/14/kafka/kafka源码解析(1)--概述/"/>
 
 
 
 
 
-  <title>Kafka源码解析(1)--揭开面纱 | 入境繁华</title>
+  <title>Kafka源码解析(1)--概述 | 入境繁华</title>
   
 
 
@@ -288,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/04/14/kafka/kafka源码解析(1)--概述/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="入境繁华">
@@ -305,7 +305,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Kafka源码解析(1)--揭开面纱</h1>
+          <h1 class="post-title" itemprop="name headline">Kafka源码解析(1)--概述</h1>
         
 
         <div class="post-meta">
@@ -317,8 +317,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-17T10:17:32+08:00">
-                2018-02-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-14T10:17:32+08:00">
+                2018-04-14
               </time>
             
 
@@ -358,8 +358,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/02/17/kafka/kafka源码解析(1)--揭开面纱/" itemprop="commentCount"></span>
+                <a href="/2018/04/14/kafka/kafka源码解析(1)--概述/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/04/14/kafka/kafka源码解析(1)--概述/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -367,7 +367,7 @@
 
           
           
-             <span id="/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/" class="leancloud_visitors" data-flag-title="Kafka源码解析(1)--揭开面纱">
+             <span id="/2018/04/14/kafka/kafka源码解析(1)--概述/" class="leancloud_visitors" data-flag-title="Kafka源码解析(1)--概述">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -410,9 +410,9 @@
 <p><strong>消息</strong>:指的是通信的基本单位，也可以是进程间通信的具体内容。<br><strong>生产者和消费者</strong>:在消息传递过程中, 产生和发布消息的一端称为生产者，接收和消费消息的一端称为消费者。<br>我们注意到概念中的“异步”二字，因为生产者和消费者往往在处理速度上不对等，如果生产者与消费者始终保持同步，必然存在有一方存在空等情况，浪费时间。因此消息队列让生产者将消息放入队列中，不用等待消费者，而继续执行自己的工作，消费者则直接去队列中取走。如果消费者效率低于消费者，消费者也不需要一直监听等待，可以做自己的事儿，只要有消息到了就直接通知消费者。</p>
 <p>根据消费队列实现方式，可以分为两种：</p>
 <ol>
-<li><p>队列模式：在队列中，一群Consumer从一个Server读取数据，每条消息被其中一个Consumer读取。 队列模式的<strong>优点</strong>是你可以在多个消费者实例上分配数据处理，从而允许你对程序进行“伸缩”，各进程可以并行消费多个消息，而不是多个消费者都在消费同一个消息。<strong>缺点</strong>是其容错性比较差，如果这个消费者宕机了，这个消费者正在消费的消息就不能被其他消费者消费了，造成消息丢失。</p>
+<li><p><strong>队列模式</strong>：在队列中，一群Consumer从一个Server读取数据，每条消息被其中一个Consumer读取。 队列模式的<strong>优点</strong>是你可以在多个消费者实例上分配数据处理，从而允许你对程序进行“伸缩”，各进程可以并行消费多个消息，而不是多个消费者都在消费同一个消息。<strong>缺点</strong>是其容错性比较差，如果这个消费者宕机了，这个消费者正在消费的消息就不能被其他消费者消费了，造成消息丢失。</p>
 </li>
-<li><p>发布-订阅模式。 在该模式中，一旦有新的消息发布就会广播通知所有的消费者。解决了容错性问题，但是因为所有消费者都在处理同一个消息导致“伸缩”能力下降，影响性能。</p>
+<li><p><strong>发布-订阅模式</strong>。 在该模式中，一旦有新的消息发布就会广播通知所有的消费者。解决了容错性问题，但是因为所有消费者都在处理同一个消息导致“伸缩”能力下降，影响性能。</p>
 </li>
 </ol>
 <p>本文我们会介绍Kafka是如何实现的，如何解决“伸缩性”和“容错性”的问题。</p>
@@ -424,7 +424,7 @@
 <h3 id="（5）可恢复性"><a href="#（5）可恢复性" class="headerlink" title="（5）可恢复性"></a>（5）可恢复性</h3><p>消息队列降低了进程间的耦合度，所以即使消费者挂掉，也不会影响到整个系统，加入队列中的消息仍然可以在消费者系统恢复后被处理。而这种允许重试或者延后处理请求的能力通常是造就一个略感不便的用户和一个沮丧透顶的用户之间的区别。</p>
 <h3 id="（6）顺序保证"><a href="#（6）顺序保证" class="headerlink" title="（6）顺序保证"></a>（6）顺序保证</h3><p>消息队列是按顺序传递消息，能够保证消费者获得的数据是有序的。</p>
 <h3 id="（7）异步通信"><a href="#（7）异步通信" class="headerlink" title="（7）异步通信"></a>（7）异步通信</h3><p>队列提供了一种异步通信协议，这意味着消息的发送者和接收者不需要同时与消息保持联系，发送者发送的消息会存储在队列中，直到接收者拿到它。</p>
-<h2 id="1-3-Kafka"><a href="#1-3-Kafka" class="headerlink" title="1.3 Kafka"></a>1.3 Kafka</h2><p>Kafka是一个消息队列(MQ), 同时也是一个分布式的流框架，最初设计用于应对LinkedIn庞大的活动流数据（登录、浏览、点击、分享、喜欢等）和系统处理数据(CPU、负载、用户请求数等)。其具备分布式、高吞吐量、容错性、多副本、流式数据处理、多订阅者的特性。Linkedin于2010年12月份开源的消息系统，目前被大量用作消息队列、流式处理（一般结合storm）、日志聚合。</p>
+<h2 id="1-3-Kafka"><a href="#1-3-Kafka" class="headerlink" title="1.3 Kafka"></a>1.3 Kafka</h2><p>Kafka是一个消息队列(MQ), 同时也是一个分布式的流框架，最初设计用于应对LinkedIn庞大的活动流数据（登录、浏览、点击、分享、喜欢等）和系统处理数据(CPU、负载、用户请求数等)。其具备<strong>分布式、高吞吐量、容错性、多副本、流式数据处理、多订阅者</strong>的特性。Linkedin于2010年12月份开源的消息系统，目前被大量用作消息队列、流式处理（一般结合storm）、日志聚合。</p>
 <h3 id="相关术语"><a href="#相关术语" class="headerlink" title="相关术语"></a>相关术语</h3><ul>
 <li>Broker：消息中间件处理结点，一个Kafka节点就是一个broker，多个broker可以组成一个Kafka集群。</li>
 <li>Topic：一类消息，是消息的抽象分类概念。每个消息在发送的时候都会指定topic.</li>
@@ -442,8 +442,14 @@
 <ul>
 <li>第一，使服务器能承载日志的大小，每个分区的日志必须可以被保存在单个服务器上，但是一个Topic可以拥有多个分区，那么它可以处理任意大小的数据量。</li>
 <li>第二，它们作为并行度的单位（更多的是这点的考虑）</li>
+<li>提高并行处理能力，生产者可以同时向多个partition写入数据，消费者也可以同时从多个partition消费数据。</li>
+<li>容错性，这样可以将一个topic分配到不同的机器上，在使用副本机制时更加容易。</li>
 </ul>
-<h3 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h3><p>发布消息的对象称之为生产者(Kafka topic producer)，生产者往某个Topic上发布消息。生产者也负责选择发布到Topic上的哪一个分区。最简单的方式是采用轮询算法(round-robin)来实现负载均衡,即从分区列表中轮流选择一个Partition(分区)发送。也可以根据某种算法依照权重选择分区。这部分由开发者负责如何选择分区的算法。</p>
+<h3 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h3><p>发布消息的对象称之为生产者(Kafka topic producer)，生产者往某个Topic上发布消息。生产者也负责选择发布到Topic上的哪一个分区：</p>
+<ul>
+<li>最简单的方式是采用轮询算法(round-robin)来实现负载均衡,即从分区列表中轮流选择一个Partition(分区)发送。也可以根据某种算法依照权重选择分区。这部分由开发者负责如何选择分区的算法。</li>
+<li>如果用户指定了消息key, 那么发消息的时候先根据key计算hash值，然后再将hash值与partition数据量取余得到对应的partition.</li>
+</ul>
 <h3 id="Consumer"><a href="#Consumer" class="headerlink" title="Consumer"></a>Consumer</h3><p>订阅消息并处理发布的消息的对象称之为消费者(consumers)。Kafka还有一个消费者组的概念，Consumer使用一个group name来标识自己属于哪个组。消费者组有以下特点:</p>
 <ul>
 <li>如果所有的Consumer实例都是属于一个group的，那么所有的消息将被均衡的分发给每个实例。那么一条消息只能被同一个组里的一个消费者Consumer消费。</li>
@@ -466,7 +472,8 @@
 <li>因为一个partition只有一个消费者消费，也保证了partition上的消息能够被消费者顺序消费</li>
 </ol>
 <p>上文提到了消息队列两种实现方式:队列和发布-订阅方式的优缺点，Kafka利用了消费组的概念很好结合了两者的优点。同时具有“伸缩性”和“容错性”。</p>
-<p>消费者会保存一个元数据是消费者的消费进度，即消费日志的偏移量（Offset）。 用来记录消费者订阅的Partion已经消费情况，通过这个方法便于消费者自己去控制消息的读取进度，保证消息可以被消费者接口。如果消费者A在消费过程中因特殊原因宕机了，这是读取到了offset=9，但是生产者还在不断的想Kafka写数据。通过消费者保存的offset很快能将宕机后未读取的消息都读取完成。</p>
+<p>消费者会保存一个元数据是消费者的消费进度，即消费日志的偏移量（Offset）。 用来记录消费者订阅的Partion已经消费情况，通过这个方法便于消费者自己去控制消息的读取进度，保证消息可以被消费者消费。如果消费者A在消费过程中因特殊原因宕机了，这是读取到了offset=9，但是生产者还在不断的想Kafka写数据。通过消费者保存的offset很快能将宕机后未读取的消息都读取完成。</p>
+<p>消费者提交offest以后会保存到该消费组的元数据中，目前版本这些数据是保持在broker中，即协调者之中。协调者根据消费者宕机情况重新分配partition, 分配到该partition的消费者则会从这个offest位置开始消费。</p>
 <p><img src="/images/15188740845525.jpg" alt=""></p>
 <h3 id="Broker"><a href="#Broker" class="headerlink" title="Broker"></a>Broker</h3><p>已发布的消息保存在一组服务器中，称之为Kafka集群。集群中的每一个服务器都是一个代理(Broker). 消费者可以订阅一个或多个主题（topic），并从Broker拉数据，从而消费这些已发布的消息。</p>
 <h3 id="四个核心API"><a href="#四个核心API" class="headerlink" title="四个核心API"></a>四个核心API</h3><p>Kafka有4个核心API：</p>
@@ -488,13 +495,13 @@
 <h2 id="2-2-Push-vs-Pull"><a href="#2-2-Push-vs-Pull" class="headerlink" title="2.2 Push vs. Pull"></a>2.2 Push vs. Pull</h2><p>Kafka遵循了传统的方式，选择由producer向broker push消息并由consumer从broker pull消息。</p>
 <p>一个消息如何算投递(push)成功，Kafka提供了三种模式:</p>
 <ul>
-<li>第一种发送出去就当作成功，这种情况当然不能保证消息成功投递到broker；</li>
-<li>第二种是对于Master Slave模型，只有当Master和所有Slave都接收到消息时，才算投递成功，这种模型提供了最高的投递可靠性，但是损伤了性能；</li>
-<li>第三种模型，即只要Master确认收到消息就算投递成功；实际使用时，根据应用特性选择，绝大多数情况下都会中和可靠性和性能选择第三种模型。</li>
+<li>第一种发送出去就当作成功，<strong>ask=0</strong>,这种情况当然不能保证消息成功投递到broker；</li>
+<li>第二种是对于Master Slave模型，<strong>ask=all</strong>, 只有当Master和所有Slave都接收到消息时，才算投递成功，这种模型提供了最高的投递可靠性，但是损伤了性能；</li>
+<li>第三种模型，<strong>ask=1</strong>, 即只要Master确认收到消息就算投递成功；实际使用时，根据应用特性选择，绝大多数情况下都会中和可靠性和性能选择第三种模型。</li>
 </ul>
 <p>对于消息的消费，ActiveMQ使用PUSH模型，而Kafka使用PULL模型，两者各有利弊:</p>
 <ul>
-<li>对于PUSH，broker很难控制数据发送给不同消费者的速度.</li>
+<li>对于PUSH，broker很难控制数据发送给不同消费者的速度. 同时需要在服务端保存各个消费者进度，增加服务端负载</li>
 <li>而PULL可以由消费者自己控制，但是PULL模型可能造成消费者在没有消息的情况下盲等，这种情况下可以通过long polling机制缓解，而对于几乎每时每刻都有消息传递的流式系统，这种影响可以忽略。</li>
 </ul>
 <h2 id="2-3-Topic-amp-Partition"><a href="#2-3-Topic-amp-Partition" class="headerlink" title="2.3 Topic &amp; Partition"></a>2.3 Topic &amp; Partition</h2><p>Topic在逻辑上可以被认为是一个queue。每条消费都必须指定它的topic，可以简单理解为必须指明把这条消息放进哪个queue里。为了使得Kafka的吞吐率可以水平扩展，物理上把topic分成一个或多个partition，每个partition在物理上对应一个文件夹，该文件夹下存储这个partition的所有消息和索引文件。<br>　　<br>每条消息都被append到该partition中，是顺序写磁盘，因此效率非常高（顺序写磁盘效率比随机写内存还要高，这是Kafka高吞吐率的一个很重要的保证）。　</p>
@@ -527,7 +534,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://zhengjianglong.cn/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/" title="Kafka源码解析(1)--揭开面纱">http://zhengjianglong.cn/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/</a>
+    <a href="http://zhengjianglong.cn/2018/04/14/kafka/kafka源码解析(1)--概述/" title="Kafka源码解析(1)--概述">http://zhengjianglong.cn/2018/04/14/kafka/kafka源码解析(1)--概述/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -557,8 +564,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/02/16/mybatis/mybatis_source_thede_cache/" rel="next" title="Mybatis源码解析(6)--二级缓存机制">
-                <i class="fa fa-chevron-left"></i> Mybatis源码解析(6)--二级缓存机制
+              <a href="/2018/02/20/nsq/NSQ源码解析(2)-nsqlookup实现原理详解/" rel="next" title="NSQ源码解析(2)-nsqlookup实现原理详解">
+                <i class="fa fa-chevron-left"></i> NSQ源码解析(2)-nsqlookup实现原理详解
               </a>
             
           </div>
@@ -567,7 +574,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/02/17/kafka/2018-02-18/" rel="prev" title="Kafka源码解析(2)--分布式下的高可用性">
+              <a href="/2018/04/15/kafka/Kafka源码解析(2)--分布式下的高可用性/" rel="prev" title="Kafka源码解析(2)--分布式下的高可用性">
                 Kafka源码解析(2)--分布式下的高可用性 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -588,10 +595,10 @@
 
     <div class="post-spread">
       
-        <div class="ds-share flat" data-thread-key="2018/02/17/kafka/kafka源码解析(1)--揭开面纱/"
-     data-title="Kafka源码解析(1)--揭开面纱"
+        <div class="ds-share flat" data-thread-key="2018/04/14/kafka/kafka源码解析(1)--概述/"
+     data-title="Kafka源码解析(1)--概述"
      data-content=""
-     data-url="http://zhengjianglong.cn/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/">
+     data-url="http://zhengjianglong.cn/2018/04/14/kafka/kafka源码解析(1)--概述/">
   <div class="ds-share-inline">
     <ul  class="ds-share-icons-16">
 
@@ -619,8 +626,8 @@
 
   
     <div class="comments" id="comments">
-      <div class="ds-thread" data-thread-key="2018/02/17/kafka/kafka源码解析(1)--揭开面纱/"
-           data-title="Kafka源码解析(1)--揭开面纱" data-url="http://zhengjianglong.cn/2018/02/17/kafka/kafka源码解析(1)--揭开面纱/">
+      <div class="ds-thread" data-thread-key="2018/04/14/kafka/kafka源码解析(1)--概述/"
+           data-title="Kafka源码解析(1)--概述" data-url="http://zhengjianglong.cn/2018/04/14/kafka/kafka源码解析(1)--概述/">
       </div>
     </div>
 
@@ -676,7 +683,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">55</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -698,7 +705,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
