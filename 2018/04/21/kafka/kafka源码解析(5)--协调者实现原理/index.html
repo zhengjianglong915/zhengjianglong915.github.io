@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="“Kafka”, "源码学习", "中间件"" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="协调者主要是负责管理和协调一个消费者组的所有消费者，协调者是本身是一个broker节点服务，只是其主要用于为消费者组服务。如管理消费者之间的分区平衡操作、管理消费者的消费进度(消费偏移量)、监控消费者是否宕机、是否需要启动再平衡操作等。">
+<meta name="keywords" content="“Kafka”, &quot;源码学习&quot;, &quot;中间件&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka源码解析(5)--协调者的实现原理">
+<meta property="og:url" content="http://zhengjianglong.cn/2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/index.html">
+<meta property="og:site_name" content="入境繁华">
+<meta property="og:description" content="协调者主要是负责管理和协调一个消费者组的所有消费者，协调者是本身是一个broker节点服务，只是其主要用于为消费者组服务。如管理消费者之间的分区平衡操作、管理消费者的消费进度(消费偏移量)、监控消费者是否宕机、是否需要启动再平衡操作等。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243078766951.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243063567457.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243092766611.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243094180511.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243235511079.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243259332293.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243595056372.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243599308583.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243611951970.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243619123900.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243619809967.jpg">
+<meta property="og:updated_time" content="2018-04-22T01:56:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kafka源码解析(5)--协调者的实现原理">
+<meta name="twitter:description" content="协调者主要是负责管理和协调一个消费者组的所有消费者，协调者是本身是一个broker节点服务，只是其主要用于为消费者组服务。如管理消费者之间的分区平衡操作、管理消费者的消费进度(消费偏移量)、监控消费者是否宕机、是否需要启动再平衡操作等。">
+<meta name="twitter:image" content="http://zhengjianglong.cn/images/15243078766951.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhengjianglong.cn/2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/"/>
+
+
+
+
+
+  <title>Kafka源码解析(5)--协调者的实现原理 | 入境繁华</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">入境繁华</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">不积跬步无以至千里</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kafka源码解析(5)--协调者的实现原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-21T21:20:32+08:00">
+                2018-04-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka源码解析/" itemprop="url" rel="index">
+                    <span itemprop="name">Kafka源码解析</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/" class="leancloud_visitors" data-flag-title="Kafka源码解析(5)--协调者的实现原理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+               <!-- 协调者主要是负责管理和协调一个消费者组的所有消费者，协调者是本身是一个broker节点服务，只是其主要用于为消费者组服务。如管理消费者之间的分区平衡操作、管理消费者的消费进度(消费偏移量)、监控消费者是否宕机、是否需要启动再平衡操作等。 文章中删除 -->
+                 
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="一-概述"><a href="#一-概述" class="headerlink" title="一. 概述"></a>一. 概述</h1><p>协调者GroupCoodinator 和控制器KafkaController一样，在每一个broker都会启动一个GroupCoodinator，Kafka 按照消费者组的名称将其分配给对应的GroupCoodinator进行管理；每一个GroupCoodinator只负责<strong>管理一部分</strong>消费者组，而非集群中全部的消费者组。而每个消费组都有唯一的一个协调者。 </p>
+<p><img src="/images/15243078766951.jpg" alt=""></p>
+<p>协调者主要是负责管理和协调<strong>消费者组</strong>的所有消费者，协调者是本身是一个broker节点服务，只是其主要用于为消费者组服务。如管理消费者之间的分区平衡操作、管理消费者的消费进度(消费偏移量)、监控消费者是否宕机、是否需要启动再平衡操作等。</p>
+<p>协调者主要有两大功能：</p>
+<ol>
+<li>作为消费组的偏移量存储介质（目前的偏移量不是存放在ZK上，而是存放在协调者上），记录消费者的对各个分区的消费进度。</li>
+<li>作为消费者的分区平衡管理器。消费者通过定时给协调者发送心跳检测请求，以表示消费者的存活状态。协调者根据消费组中存活的消费者数量，按照分区分配算法给消费者均衡分配分区。</li>
+</ol>
+<p>每个消费组都有唯一的一个协调者，协调者会保存消费组相关的元数据、消费者提交分区的偏移量给协调者，协调者更新消费组元数据。除了更新到日志文件，还会保存到缓存中，提高查询效率。</p>
+<h1 id="二-偏移量的存储介质功能"><a href="#二-偏移量的存储介质功能" class="headerlink" title="二. 偏移量的存储介质功能"></a>二. 偏移量的存储介质功能</h1><p>众所周知，由于Zookeeper并不适合大批量的频繁写入操作，从0.8.2版本开始Kafka开始支持将consumer的位移信息保存在Kafka内部的topic中（从0.9.0版本开始默认将offset存储到Kafka内部的topic中)，即__consumer_offsets topic，并且默认提供了kafka_consumer_groups.sh脚本供用户查看consumer信息。</p>
+<p>　　<br>协调者中保存了消费组元数据，包括了消费者提交的偏移量和消费组分配的状态数组，这两个数组都是以内部主题(_consumer_offsets)的形式存储在服务端的协调者节点上。 消费组元数据是按topic的形式存储，<strong>默认情况下__consumer_offsets有50个分区</strong>。消费元数据除了保存在日志文件中，还保存在协调者节点的内存缓存中。当节点宕机时，服务器除了需要处理主副本数据的故障转移，还会在其他节点上恢复缓存的数据。</p>
+<p>__consumer_offsets的数据格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">［consumer group,topic name,partition］</span><br></pre></td></tr></table></figure>
+<p>那么多代理节点，协调者是如何指定的呢？每个消费组元素数据是如何获取和存储的？如何指定存在哪个分区的？这时候就用到了group.id, Kafka会使用下面公式计算该group位移保存在__consumer_offsets的哪个分区上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Math.abs(groupID.hashCode()) % numPartitions</span><br></pre></td></tr></table></figure>
+<p>计算得到的分区的主副本所在的代理节点就是该消费组所在的协调者。图中有三个消费组，他们的[group1, group2, group3]， 通过以上计算公式得出该三个消费组的元数据分别在__consumer_offsets的P1、P2、P3三个分区上。并且这三个分区的主副本在代理节点1、2、3。 因此代理节点1、2、3分别是group1、 group2、group3的协调者节点。 消费元数据除了保存在日志文件中，还保存在协调者节点的内存缓存中，以提高检索速度。</p>
+<p><img src="/images/15243063567457.jpg" alt=""></p>
+<p>因为协调者是根据消费组在__consumer_offsets主题存储的分区主副本节点决定，因此协调者的选举和主副本一致，只要该分区的主副本选举出来，那么该消费组所在的协调者就确定了。</p>
+<p>和其他topic一样，_consumre_offsets也是通过多副本的方式提高容错性和故障转移，一旦协调者节点挂了，则会转移到其他节点上。 消费组元数据在_consumre_offsets所在分区_consumre_offsets_1的主副本在代理节点1，代理节点1是协调者，该分区的其他副本分别存放在节点2，3上，如图所示：<br><img src="/images/15243092766611.jpg" alt=""></p>
+<p>一旦协调者节点挂了，则会转移到其他节点上:<br><img src="/images/15243094180511.jpg" alt=""></p>
+<p>如图所示，如果节点1挂了，那么consumer_offsets_1的主副本转移到了代理节点3上。代理节点3成为了消费组新的协调者。当消费组的协调者发送故障时，消费组的每个消费者都需要连接新的协调者。</p>
+<h1 id="三-分区平衡管理"><a href="#三-分区平衡管理" class="headerlink" title="三. 分区平衡管理"></a>三. 分区平衡管理</h1><h2 id="3-1-消费者加入消费组"><a href="#3-1-消费者加入消费组" class="headerlink" title="3.1 消费者加入消费组"></a>3.1 消费者加入消费组</h2><p>消费者在消费消息的时候需要先加入消费组，通过协调者给消费者分配partition。然后消费者再从这些partition上消费消息。</p>
+<p>消费者加入组的大致步骤如下：<br><img src="/images/15243235511079.jpg" alt=""></p>
+<ol>
+<li>每个消费者都向协调者发送“加入组请求”，申请加入消费组。</li>
+<li>协调者收集所有的消费者，以及它们的订阅信息。</li>
+<li>协调者选举一个消费者作为客户端的主消费者。主消费者是第一个发送“加入组请求”的消费者，如果主消费者宕机则选择下一个消费者作为主消费者。</li>
+<li>协调者向所有发送“加入组请求”的消费者返回响应结果，其中包含所有消费者的成员列表。</li>
+<li>协调者将分区分配交给了主消费者，因此主消费者需要做额外的分区分配工作。并将计算完成后的分区结果发送一个“同步组请求”给协调者。</li>
+<li>而普通消费者受到“加入组请求”的响应后，立即向协调者发送一个“同步组请求”。</li>
+<li>不管是主消费者还是普通消费者，“同步组请求”就是为了获取分区分配结果。</li>
+<li>协调者收到主消费者的分配结果后，将分区返回给每个消费者。</li>
+<li>各个消费者收到结果后，将分区partition设置到消费者的订阅状态中，并重置心态定时任务。</li>
+</ol>
+<p><img src="/images/15243259332293.jpg" alt=""></p>
+<p>协调者不会直接分配分区，而是将分配分区的处理交给了主消费者。这样做的好处就是可以减少协调者本身的负担，但是缺点是客户端计算结果后，需要把分区结果同步给协调者，再由协调者将分区结果同步给各个消费者客户端。</p>
+<p><strong>如何选择主消费者？</strong><br>通常选择第一个发送“加入组请求”的消费者作为主消费者。如果主消费者宕机则选择下一个消费者作为主消费者。</p>
+<p><strong>如何处理主消费者宕机？</strong><br>不管是什么类型的消费者，都会按照心跳超时的方式处理，失败的消费者将被协调者从消费组移除，并触发再平衡操作，剩余存活的消费者需要重新加入消费组。</p>
+<p><strong>消费者如何得到分区结果？</strong><br>每个消费者发送“加入组请求“后，会再发送一个”同步组请求“给协调者来获取分配的分区。普通消费者在发送”加入组请求后“立即发送一个”同步组请求“，而主消费者是在等分区分配完成后，带着分区结果发送一个”同步组请求“给协调者。</p>
+<h3 id="3-1-1-加入组请求和同步组请求"><a href="#3-1-1-加入组请求和同步组请求" class="headerlink" title="3.1.1 加入组请求和同步组请求"></a>3.1.1 加入组请求和同步组请求</h3><p>各个消费者向协调者发送”加入组请求“，协调者收集所有消费者消息后会给所有消费者响应。但是会根据不同的消费者的类型响应不同的内容：</p>
+<ul>
+<li>返回给主消费者的响应结果是”所有消费者成员列表及其订阅的信息“。主消费者根据分区分配算法，给所有消费者分配分区。分配完成后，带着分配结果发送一个”同步组请求“给协调者。</li>
+<li>返回给普通消费者的响应结果没有那些信息。普通消费者收到”加入组请求“的响应后，马上发送了一个”同步组请求“给协调者。这里采用了链式模式，将”同步组请求”的结果会作为“加入组请求”的结果返回给消费者。</li>
+</ul>
+<p>消费者发送的“加入组请求”内容包含了：<strong>消费组编号、消费组成员编号、协议类型、协议内容（分配分区的算法）和元数据</strong>。加入组请求时，如果消费者成员编号未知，协调者会为其分配一个新的成员编号，然后创建消费者成员元数据，并加入到消费组元数据中，并将成员编号作为“加入组请求”的响应结果返回给消费者。如果消费者成员编号是已知的(一般是再平衡时)，只需要更新已有成员的元数据即可。</p>
+<p>消费者向协调者发送“同步组请求”的时候必须带上消费者的成员编号。协调者在发送“同步组请求”响应给消费者之前，先会把“消费者分配结果”以普通消息的形式持久化到内部主题(<strong>consumer_offsets)中。 如果协调节点出现故障需要进行故障迁移，新的协调者可以从</strong>consumer_offsets中读取持久化的消息，重建“消费组分配结果”。 </p>
+<h3 id="3-1-2-主消费者执行分区分配"><a href="#3-1-2-主消费者执行分区分配" class="headerlink" title="3.1.2 主消费者执行分区分配"></a>3.1.2 主消费者执行分区分配</h3><p>消费者发送的“加入组请求”内容包含了：消费组编号、消费组成员编号、协议类型、协议内容（分配分区的算法）和元数据。在分配分区的时候只能使用一个协议，因此协调者在收到所有消费者的信息后，同一所有消费者的协议，选择一个大多消费者都支持的分区分配协议。</p>
+<p>消费者进行分区分配的算法有两种：</p>
+<ul>
+<li>RoundRobinAssignor</li>
+<li>RangeAssignor</li>
+</ul>
+<h4 id="RoundRobinAssignor"><a href="#RoundRobinAssignor" class="headerlink" title="RoundRobinAssignor"></a>RoundRobinAssignor</h4><ol>
+<li>首先对所有的消费者按照消费者memberId排序。构成一个循环链。</li>
+<li>对所有的partition按照topic和partition顺序排序。</li>
+<li>然后遍历所有的partition，并已排好的顺序采用轮询的方式分配给消费者。</li>
+</ol>
+<p>例如有两个消费者C0和C1， 都订阅了主题T0和T1， 并且每个主题都有三个partition。则产生了</p>
+<ol>
+<li>首先对消费者排序得到：C0, C1</li>
+<li>对partition排序： T0P1, T0P2, T0P3,T1P1,T1P2,T1P3</li>
+<li>遍历所有的partition进行分配：<ul>
+<li>遍历T0P1时，开始轮询消费者，因为C0订阅了T0，则分配。     即 C0：T0P1</li>
+<li>遍历到T0P2，此刻下一个消费者是C1, C1订阅了T0则分配给它。 即C0:[T0P1]      , C1:[T0P2]</li>
+<li>遍历到T0P3，此刻又轮到了消费者C0, 则分配给它。 即C0:[T0P1, T0P3], C1:[T0P2]</li>
+<li>遍历到T1P1， 轮到消费者C1。即C0:[T0P1, T0P3], C1:[T0P2，T1P1]</li>
+<li>遍历到T1P2， 轮到消费者C0。即C0:[T0P1, T0P3, T1P2], C1:[T0P2，T1P1]</li>
+<li>遍历到T1P3， 轮到消费者C1。即C0:[T0P1, T0P3, T1P2], C1:[T0P2，T1P1, T1P3]</li>
+</ul>
+</li>
+</ol>
+<p>消费者发送“同步组请求”的内容包含：消费组编号、纪元编号、消费者成员编号、消费组分配结果(只有主消费者才会发送)。</p>
+<h2 id="3-2-消费者再平衡"><a href="#3-2-消费者再平衡" class="headerlink" title="3.2 消费者再平衡"></a>3.2 消费者再平衡</h2><p>消费者开启了一个“消费组再平衡监听器”，当消费者列表发生改变的时候协调者会通知消费者的再平衡监视器，让消费者重新加入消费组，进行再平衡操作。</p>
+<p>“消费组再平衡监视器”只使用订阅模式的消费者API，如果是手动分配分区模式，则监视器不会起作用。</p>
+<h2 id="3-3-消费组元数据状态"><a href="#3-3-消费组元数据状态" class="headerlink" title="3.3 消费组元数据状态"></a>3.3 消费组元数据状态</h2><p>消费组元数据管理了所有消费者的“成员元数据”以及消费偏移量，如上文所说这些都是以内部主题__consumer_offsets的方式进行存储。</p>
+<p>消费组元数据除了以上数据外，还有一个非常重要的数据，就是消费组状态。消费组状态有4种：</p>
+<ul>
+<li>稳定状态（stable）</li>
+<li>准备再平衡状态(preparingReblance)</li>
+<li>等待同步状态(AwaitingSync)</li>
+<li>离开状态(Dead)</li>
+</ul>
+<p>协调者在处理消费者发送的“加入组请求”和“同步组请求”时，都会依赖消费组的当前状态进入不同的分支。</p>
+<p> <img src="/images/15243595056372.jpg" alt=""></p>
+<p> 当只有一个消费者加入消费组时，具体流程：</p>
+<ol>
+<li>协调者处理第一个消费者“加入组请求”, 会创建消费组的成员数据，并加入消费组元数据。这时候会进行加锁，避免同时处理多个“加入组请求”或“同步组请求”。</li>
+<li><strong>消费组初始状态为”稳定”状态</strong>，开始再平衡操作，将状态改为“准备再平衡”</li>
+<li>创建一个“延迟加入组”的对象，并立即通过“延迟缓存”尝试完成刚创建的延迟操作。</li>
+<li>目前只有一个消费者成员，notYetRejoinMembers()没有任何元素，满足“完成延迟操作”条件。</li>
+<li>因为可以完成延迟操作，所以强制完成方法会调用延迟操作对象的onCompleteJoin()方法。</li>
+<li>延迟操作对象在完成时的回调方法，会首先将消费组状态更新为“等待同步”</li>
+<li>返回“加入组请求”响应给所有消费者。</li>
+<li>释放同步锁。</li>
+<li>主消费者处理分配分区后，将分配分区结果用“同步组请求”方式发送给协调者。</li>
+<li>协调者处理同步组请求，需要加同步锁</li>
+<li>存储消费组分配结果，将消费组状态改为“稳定“</li>
+<li>返回同步组响应给所有消费者。</li>
+</ol>
+<p>  设置到消费组元数据的修改和查询操作过程都需要进行加锁，上面是显示一个消费者的处理流程。当存在两个消费者同时加入组时，首先消费者1加入组请求完成后，准备去执行分配分区算法，并将分配结果发送“同步组请求”给协调者。此刻正好有个消费组2要发起“加入组请求”。  消费组2的“加入组请求”和消费组1的“同步组请求”是互斥的，因为协调者做了加锁动作，因而有一下两种结果。如果“同步组请求”先到达，那么协调器处理“同步组请求”，将结果返回给所有消费者，并将状态改为稳定。如果是消费组2的“加入组请求”先到达，这时候就将消费组的状态改为“准备再平衡”，执行再平衡。下文对第二种情况进行描述。</p>
+<p>  <img src="/images/15243599308583.jpg" alt=""></p>
+<p>协调者在处理各个消费者的“加入组请求”或“同步组请求”的时候都会为其设置一个回调函数，当向该消费者响应“加入组请求”或“同步组请求”结果时将的回调函数设置为空。当消费组状态为“准备再平衡”时，需要等待所有消费者都加入消费组或发送“加入组请求”。协调者通过会检查所有的消费者的这个回调函数是否为空，来判断是否消费者都发送了“加入组请求”，如果存在回调函数为空的消费者则需要让其重新发送加入组请求。</p>
+<p>如图所示，如果第一个消费组完成加入请求组后，第二个消费者加入消费组。因为处理每个消费者“加入组请求”都会将状态改为“准备再平衡”操作，检查有回调方法为null的，则让通知该消费者重新加入消费组。协调者只有获取所有消费者(保存在协调者中的消费组列表成员)的加入组请求后，才执行后续的动作。</p>
+<p><img src="/images/15243611951970.jpg" alt=""></p>
+<p>因此上面两个消费者不同时间加入会产生以下两种结果：</p>
+<ol>
+<li><p>第一个消费者同步请求先到达<br><img src="/images/15243619123900.jpg" alt=""></p>
+</li>
+<li><p>第二个加入组请求先到达<br><img src="/images/15243619809967.jpg" alt=""></p>
+</li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>[1] <a href="https://www.cnblogs.com/huxi2b/p/6061110.html" target="_blank" rel="noopener">Kafka 如何读取offset topic内容 (__consumer_offsets)</a></li>
+<li>[2] <a href="http://www.sohu.com/a/136881236_487514" target="_blank" rel="noopener">Kafka集群磁盘使用率瞬超85%，幕后元凶竟是它？</a></li>
+<li>[3]《kafka技术内幕》</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    入境繁华
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://zhengjianglong.cn/2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/" title="Kafka源码解析(5)--协调者的实现原理">http://zhengjianglong.cn/2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码解析/" rel="tag"># 源码解析</a>
+          
+            <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/21/kafka/kafka源码解析(4)--消费者实现原理/" rel="next" title="Kafka源码解析(4)--消费者的实现原理">
+                <i class="fa fa-chevron-left"></i> Kafka源码解析(4)--消费者的实现原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/"
+     data-title="Kafka源码解析(5)--协调者的实现原理"
+     data-content=""
+     data-url="http://zhengjianglong.cn/2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/"
+           data-title="Kafka源码解析(5)--协调者的实现原理" data-url="http://zhengjianglong.cn/2018/04/21/kafka/kafka源码解析(5)--协调者实现原理/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/author.jpeg"
+                alt="入境繁华" />
+            
+              <p class="site-author-name" itemprop="name">入境繁华</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/JohnZhengHub" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/2711026835/profile?topnav=1&wvr=6" target="_blank" title="weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/ru-jing-fan-hua" target="_blank" title="zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhengjianglong@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://luodw.cc/" title="罗道文的博客" target="_blank">罗道文的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://youbingchenyoubing.leanote.com/" title="陈友兵的博客" target="_blank">陈友兵的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://arebya.github.io/" title="施亚的博客" target="_blank">施亚的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://rannn.cc/" title="陶然的博客" target="_blank">陶然的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一-概述"><span class="nav-number">1.</span> <span class="nav-text">一. 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二-偏移量的存储介质功能"><span class="nav-number">2.</span> <span class="nav-text">二. 偏移量的存储介质功能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三-分区平衡管理"><span class="nav-number">3.</span> <span class="nav-text">三. 分区平衡管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-消费者加入消费组"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 消费者加入消费组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-加入组请求和同步组请求"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.1.1 加入组请求和同步组请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-主消费者执行分区分配"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.1.2 主消费者执行分区分配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#RoundRobinAssignor"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">RoundRobinAssignor</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-消费者再平衡"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 消费者再平衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-消费组元数据状态"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 消费组元数据状态</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">入境繁华</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"jaylonzheng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("83pavVlI9KtTV5H0NspTyEn7-gzGzoHsz", "7MniqoeFo7WOp06lmwzbhnyS");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
