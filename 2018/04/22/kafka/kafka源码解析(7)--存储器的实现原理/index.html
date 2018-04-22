@@ -130,7 +130,7 @@
 <meta property="og:image" content="http://zhengjianglong.cn/images/15244037838933.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15244042056787.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15244056409707.jpg">
-<meta property="og:updated_time" content="2018-04-22T14:05:41.000Z">
+<meta property="og:updated_time" content="2018-04-22T14:07:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kafka源码解析(7)--存储器的实现原理">
 <meta name="twitter:description" content="kafka的存储基本单位的分区，kafka采用提交日志的方式作为最终的存储形式。类似的框架有Hbase等。为了提高性能，保证写数据的效率，kafka采用的追加方式，而不是直接修改记录。只保留了一份数据，并且还有一个后台压缩操作，将多条记录压成一条...">
@@ -428,8 +428,7 @@
 <li>将第i个Partition分配到第(i mod n)个Broker上. </li>
 <li>将第i个Partition的第j个副本分配到第((i + j) mod n)个Broker上.</li>
 </ul>
-<p>每一个topic的分区0都会被分配在broker 0上。第1个分区都分配到broker 1上。直到partition的id超过broker的数据才開始从头開始反复，这样会导致前面几台机器的压力比后面的机器压力更大。</p>
-<p>因此。kafka是先随机挑选一个broker放置分区0，然后再按顺序放置其他分区。</p>
+<p>每一个topic的分区0都会被分配在broker 0上。第1个分区都分配到broker 1上。直到partition的id超过broker的数据才開始从头開始反复，这样会导致前面几台机器的压力比后面的机器压力更大。因此。kafka是先随机挑选一个broker放置分区0，然后再按顺序放置其他分区。</p>
 <p>以下图为例, 这里分区0放到了broker5中。分区1–broker6。分区2—broker7….：<br><img src="/images/15243804627440.jpg" alt=""></p>
 <h2 id="2-2-存储结构"><a href="#2-2-存储结构" class="headerlink" title="2.2 存储结构"></a>2.2 存储结构</h2><p><img src="/images/15244051538632.jpg" alt=""></p>
 <p>从存储结构上上，一个分区对应一个文件目录，分区下有多个日志分段(LogSegment), 同一个目录下的所有日志分段都属于同一个分区。</p>
