@@ -112,7 +112,7 @@
 <meta name="description" content="kafka的存储基本单位的分区，kafka采用提交日志的方式作为最终的存储形式。类似的框架有Hbase等。为了提高性能，保证写数据的效率，kafka采用的追加方式，而不是直接修改记录。只保留了一份数据，并且还有一个后台压缩操作，将多条记录压成一条...">
 <meta name="keywords" content="“Kafka”, &quot;源码学习&quot;, &quot;中间件&quot;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Kafka源码解析(6)--控制器的实现原理">
+<meta property="og:title" content="Kafka源码解析(7)--存储器的实现原理">
 <meta property="og:url" content="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/index.html">
 <meta property="og:site_name" content="入境繁华">
 <meta property="og:description" content="kafka的存储基本单位的分区，kafka采用提交日志的方式作为最终的存储形式。类似的框架有Hbase等。为了提高性能，保证写数据的效率，kafka采用的追加方式，而不是直接修改记录。只保留了一份数据，并且还有一个后台压缩操作，将多条记录压成一条...">
@@ -130,9 +130,9 @@
 <meta property="og:image" content="http://zhengjianglong.cn/images/15244037838933.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15244042056787.jpg">
 <meta property="og:image" content="http://zhengjianglong.cn/images/15244056409707.jpg">
-<meta property="og:updated_time" content="2018-04-22T14:01:41.000Z">
+<meta property="og:updated_time" content="2018-04-22T14:05:41.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Kafka源码解析(6)--控制器的实现原理">
+<meta name="twitter:title" content="Kafka源码解析(7)--存储器的实现原理">
 <meta name="twitter:description" content="kafka的存储基本单位的分区，kafka采用提交日志的方式作为最终的存储形式。类似的框架有Hbase等。为了提高性能，保证写数据的效率，kafka采用的追加方式，而不是直接修改记录。只保留了一份数据，并且还有一个后台压缩操作，将多条记录压成一条...">
 <meta name="twitter:image" content="http://zhengjianglong.cn/images/15243854677539.jpg">
 
@@ -170,7 +170,7 @@
 
 
 
-  <title>Kafka源码解析(6)--控制器的实现原理 | 入境繁华</title>
+  <title>Kafka源码解析(7)--存储器的实现原理 | 入境繁华</title>
   
 
 
@@ -314,7 +314,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Kafka源码解析(6)--控制器的实现原理</h1>
+          <h1 class="post-title" itemprop="name headline">Kafka源码解析(7)--存储器的实现原理</h1>
         
 
         <div class="post-meta">
@@ -376,7 +376,7 @@
 
           
           
-             <span id="/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/" class="leancloud_visitors" data-flag-title="Kafka源码解析(6)--控制器的实现原理">
+             <span id="/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/" class="leancloud_visitors" data-flag-title="Kafka源码解析(7)--存储器的实现原理">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -509,7 +509,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/" title="Kafka源码解析(6)--控制器的实现原理">http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/</a>
+    <a href="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/" title="Kafka源码解析(7)--存储器的实现原理">http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -567,7 +567,7 @@
     <div class="post-spread">
       
         <div class="ds-share flat" data-thread-key="2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/"
-     data-title="Kafka源码解析(6)--控制器的实现原理"
+     data-title="Kafka源码解析(7)--存储器的实现原理"
      data-content=""
      data-url="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/">
   <div class="ds-share-inline">
@@ -598,7 +598,7 @@
   
     <div class="comments" id="comments">
       <div class="ds-thread" data-thread-key="2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/"
-           data-title="Kafka源码解析(6)--控制器的实现原理" data-url="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/">
+           data-title="Kafka源码解析(7)--存储器的实现原理" data-url="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/">
       </div>
     </div>
 
