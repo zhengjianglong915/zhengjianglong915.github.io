@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="“Kafka”, "源码学习", "中间件"" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="kafka的存储基本单位的分区，kafka采用提交日志的方式作为最终的存储形式。类似的框架有Hbase等。为了提高性能，保证写数据的效率，kafka采用的追加方式，而不是直接修改记录。只保留了一份数据，并且还有一个后台压缩操作，将多条记录压成一条...">
+<meta name="keywords" content="“Kafka”, &quot;源码学习&quot;, &quot;中间件&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka源码解析(6)--控制器的实现原理">
+<meta property="og:url" content="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/index.html">
+<meta property="og:site_name" content="入境繁华">
+<meta property="og:description" content="kafka的存储基本单位的分区，kafka采用提交日志的方式作为最终的存储形式。类似的框架有Hbase等。为了提高性能，保证写数据的效率，kafka采用的追加方式，而不是直接修改记录。只保留了一份数据，并且还有一个后台压缩操作，将多条记录压成一条...">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243854677539.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243804627440.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15244051538632.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243903468565.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243868732867.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15243892709664.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/images/15244013717142.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/images/15244013542483.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15244022392622.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15244023183324.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15244037838933.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15244042056787.jpg">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15244056409707.jpg">
+<meta property="og:updated_time" content="2018-04-22T14:01:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kafka源码解析(6)--控制器的实现原理">
+<meta name="twitter:description" content="kafka的存储基本单位的分区，kafka采用提交日志的方式作为最终的存储形式。类似的框架有Hbase等。为了提高性能，保证写数据的效率，kafka采用的追加方式，而不是直接修改记录。只保留了一份数据，并且还有一个后台压缩操作，将多条记录压成一条...">
+<meta name="twitter:image" content="http://zhengjianglong.cn/images/15243854677539.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/"/>
+
+
+
+
+
+  <title>Kafka源码解析(6)--控制器的实现原理 | 入境繁华</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">入境繁华</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">不积跬步无以至千里</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kafka源码解析(6)--控制器的实现原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-22T21:20:32+08:00">
+                2018-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka源码解析/" itemprop="url" rel="index">
+                    <span itemprop="name">Kafka源码解析</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/" class="leancloud_visitors" data-flag-title="Kafka源码解析(6)--控制器的实现原理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+               <!-- kafka的存储基本单位的分区，kafka采用提交日志的方式作为最终的存储形式。类似的框架有Hbase等。为了提高性能，保证写数据的效率，kafka采用的追加方式，而不是直接修改记录。只保留了一份数据，并且还有一个后台压缩操作，将多条记录压成一条... 文章中删除 -->
+                 
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="一-概述"><a href="#一-概述" class="headerlink" title="一. 概述"></a>一. 概述</h1><p>kafka的存储基本单位的分区，kafka采用提交日志的方式作为最终的存储形式。类似的框架有Hbase等。为了提高性能，保证写数据的效率，kafka采用的追加方式，而不是直接修改记录。只保留了一份数据，并且还有一个后台压缩操作，将多条记录压成一条。</p>
+<p><strong>kafka的消息按照主题进行组织，不同类别的消费分成不同的主题。为了提高消息的并行处理能力，每个主题会有多个分区。为了保证消息分区的可用性，每个分区有多个副本</strong>。</p>
+<p>为什么要分区？以分区作为存储的基本单位：</p>
+<ul>
+<li>如果没有分区，所以的消息只能存储到一个节点上，这样无限制的追加会导致一个节点文件非常的大。还会引入切分的问题。</li>
+<li>使用分区也可以提高并行处理能力和吞吐量。多个生产者可以同时向多个分区写数据，多个消费者可以同时从多分分区消费数据。</li>
+</ul>
+<p><strong>一个分区只有一个主副本Leader, 其他副本叫做备份副本。和redis一样，主副本负责读写，备份副本负责向向主副本拉取数据，以便和主副本保持同步。一个代理节点上只能有一个副本（主副本或备份副本）</strong></p>
+<p><img src="/images/15243854677539.jpg" alt=""></p>
+<h1 id="二-日志存储"><a href="#二-日志存储" class="headerlink" title="二. 日志存储"></a>二. 日志存储</h1><h2 id="2-1-分区副本存储节点分配"><a href="#2-1-分区副本存储节点分配" class="headerlink" title="2.1 分区副本存储节点分配"></a>2.1 分区副本存储节点分配</h2><p>客户端访问分区，首先获取分区的主副本，然后找到主副本所在的消息代理节点编号，最后从消息代理节点得写主副本对应的日志文件。每个主副本存储在不同的消息代理节点上，分区的存储的代理节点是由控制器分配的，具体参考 <a href="http://zhengjianglong.cn/2018/04/22/kafka/kafka%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90(6">kafka源码解析(6)–控制器的实现原理</a>–%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/)。</p>
+<p>副本分配算法例如以下： </p>
+<ul>
+<li>将全部N Broker和待分配的i个Partition排序. </li>
+<li>将第i个Partition分配到第(i mod n)个Broker上. </li>
+<li>将第i个Partition的第j个副本分配到第((i + j) mod n)个Broker上.</li>
+</ul>
+<p>每一个topic的分区0都会被分配在broker 0上。第1个分区都分配到broker 1上。直到partition的id超过broker的数据才開始从头開始反复，这样会导致前面几台机器的压力比后面的机器压力更大。</p>
+<p>因此。kafka是先随机挑选一个broker放置分区0，然后再按顺序放置其他分区。</p>
+<p>以下图为例, 这里分区0放到了broker5中。分区1–broker6。分区2—broker7….：<br><img src="/images/15243804627440.jpg" alt=""></p>
+<h2 id="2-2-存储结构"><a href="#2-2-存储结构" class="headerlink" title="2.2 存储结构"></a>2.2 存储结构</h2><p><img src="/images/15244051538632.jpg" alt=""></p>
+<p>从存储结构上上，一个分区对应一个文件目录，分区下有多个日志分段(LogSegment), 同一个目录下的所有日志分段都属于同一个分区。</p>
+<p>随着日志文件不断增加，为了便于管理和查找，Kafka对分区日志进行分段。当日志文件超过一个阈值后就产生一个新段。<strong>每个日志分段在物理上由一个数据文件和一个索引文件组成</strong>。数据文件存储的是消息的真正内容，而索引文件存储的是数据文件的索引信息。为数据文件建立索引文件的目的是更快地访问数据文件。</p>
+<p>生产者些消息到分区时采用追加方式，顺序写磁盘的性能很高。消费者一般情况下也是顺序读取消息，顺序读消息的性能也很高。有时候需要从指定偏移量读取信息，此刻可以用上段索引文件，提高读取性能。</p>
+<p>日志和日志分段的主要成员变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">class Log(val dir: File) &#123;</span><br><span class="line">   // 日志包括多个日志分段</span><br><span class="line">   val segments = new ConcurrentSkiplistMap[java.lang.Long, LogSegment]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 分段日志</span><br><span class="line">class LogSegment private[log] (val log: FileRecords,</span><br><span class="line">                               val offsetIndex: OffsetIndex,</span><br><span class="line">                               val timeIndex: TimeIndex,</span><br><span class="line">                               val txnIndex: TransactionIndex,</span><br><span class="line">                               val baseOffset: Long,</span><br><span class="line">                               val indexIntervalBytes: Int,</span><br><span class="line">                               val rollJitterMs: Long,</span><br><span class="line">                               val maxSegmentMs: Long,</span><br><span class="line">                               val maxSegmentBytes: Int,</span><br><span class="line">                               val time: Time) extends Logging</span><br></pre></td></tr></table></figure>
+<p>每个日志分段都有一个基准偏移量(baseOffset), 即起始的偏移量，是一个绝对偏移量值。</p>
+<p><img src="/images/15243903468565.jpg" alt=""></p>
+<h2 id="2-3-写日志"><a href="#2-3-写日志" class="headerlink" title="2.3 写日志"></a>2.3 写日志</h2><p>kafka写日志采用追加方式，将消息追加到日志后面。每个分区对应的日志管理对象管理了分区的所有日志分段。每次将消息集追加到<strong>当前活动的日志分段</strong>，任何时刻一份分区只有一个活动日志分段。每个分区分段对应一个数据文件和一个索引文件，消息内容会追加到数据文件中。kafka服务端将接受到的消息转换为字节缓冲区的消息集(ByteBufferMessageSet)，操作底层的数据接口是文件通道，消息集的writeFullyTo()方法，调用文件通道的write()方法，将底层包含消息内容的字节缓冲区(ByteBuffer)写到文件通道中。一旦字节缓冲写到文件通道后，消息就被持久化到日志分段对应的数据文件中。</p>
+<p><img src="/images/15243868732867.jpg" alt=""></p>
+<p>消息集中的每条消息由3个部分组成：偏移量、数据大小、消息内容。如图所示：<br><img src="/images/15243892709664.jpg" alt=""></p>
+<p>kafka在存储消息的时候，会为每个消息指定一个偏移量，偏移量不断递增。服务器将每个分区的消息追加到当前活动日志分段中，当日志分段累加的消息达到一个阈值大小（默认为1GB）时, 会创建一个新的日志分段保存新的消息，而分区的消息总是追加到新的日志分段中。没增加一个新端则会为该端设置基准偏移量，第一条消息的绝对偏移量。在查询的时候可以利用这个基准偏移量提高查询性能。</p>
+<p>新日志分段创建有3种条件：</p>
+<ul>
+<li>一基于日志分段累计的消息大小，日志分段的阈值设置使用log.segment.bytes配置</li>
+<li>根据滚动时间，滚动时间配置log.roll.hours.</li>
+<li>如果索引文件满了，也会创建一个新的日志分段。</li>
+</ul>
+<p>每次写入数据文件后不会马上将数据写入索引文件，而是同时间隔indexIntervalBytes大小才会写入一条索引条目到索引文件中。因此所以文件不是包含所有的日志消息，只是包含部分消息索引。 索引文件是构建了”消息相对偏移量“到”消息在数据文件中的物理位置“的映射关系。使用相对偏移量是减少内存开销，因为每个分段已经保存了一个基准偏移量，很容易计算其绝对偏移量：基准偏移量+相对偏移量。</p>
+<h2 id="2-4-读日志"><a href="#2-4-读日志" class="headerlink" title="2.4 读日志"></a>2.4 读日志</h2><p>kafka日志对象保存了基准偏移量和日志分段的映射关系，消费者在消费消息的时候会指定offset, 同时还会指定拉取的数量（fatchSize），fatchSize通过max.partition.fetch.bytes设置，默认为1MB。日志分段文件的基准偏移量按照从小到大顺序排序，用于要从某个偏移量offset开始读取数据，那么首先需要找到这个偏移量在日志文件的位置。</p>
+<p>为了快速定位，首先会根据日志分段的基准偏移量进行二分查找，找到小于offset的最大基准偏移量对应的日志分段文件。根据日志分段文件的索引文件快速定位小于offset的最大值位置。如果还没找到，最后再采用顺序遍历。</p>
+<p>假如有基准偏移量为[0,100,200,300,400,500]的日志分段文件中，从offset开始拉取数据。那么首先定位日志分段文件，因为300是小于350的最大基准偏移量，因此定位到300的那个日志分段文件。<br><img src="images/15244013717142.jpg" alt=""></p>
+<p>接下来需要定位offset在日志文件的位置，此刻使用索引文件定位到小于350的最大值328，因为还不是最终的offset位置，还需要在日志文件中顺序往下移动，找到那个消息位置，此刻找了offset，开始拉取数据。</p>
+<p><img src="images/15244013542483.jpg" alt=""></p>
+<p>文件消息集是数据文件的实现类，这个类除了文件、文件通道外还有两个变量：开始位置start和结束位置end. 文件消息集的读取方法会根据起始位置和读取大小创建一个新的文件消息集视图。每次调用方法都会创建一个新的消息集对象。<strong>所有的文件消息集都共用同一个文件和文件通道。</strong></p>
+<p>读取日志文件并将日志消息发送给客户端的到具体过程如下：</p>
+<ul>
+<li>读取日志分段，读取文件消息集</li>
+<li>文件消息集的读取方法会生成一个局部的文件消息视图，它和数据文件底层的文件通道相关。</li>
+<li><p>局部文件消息集视图发送拉取响应结果给客户端，会将文件通道的字节直接传输到网络通道中。</p>
+<p><img src="/images/15244022392622.jpg" alt=""></p>
+</li>
+</ul>
+<h3 id="采用文件通道实现了零拷贝传输"><a href="#采用文件通道实现了零拷贝传输" class="headerlink" title="采用文件通道实现了零拷贝传输"></a>采用文件通道实现了零拷贝传输</h3><p>kafka服务端在处理客户端拉取请求时，在读取文件消息集后，通过transferTo方法实现了文件通道内容到网络通道的传输，而无需将通道内容拷贝到缓冲区，再将缓冲区拷贝到网络通道中。文件通道和网络通道属于内核态，而缓冲区是属于用户态，这样避免从内核态切换到用户态也提高了发送效率。</p>
+<p><img src="/images/15244023183324.jpg" alt=""></p>
+<h2 id="2-5-日志管理"><a href="#2-5-日志管理" class="headerlink" title="2.5 日志管理"></a>2.5 日志管理</h2><p>kafka提供了一个检查点，每个日志分区目录都有一个全局的检查点文件，该文件存储了这个目录下所有日志文件的检查点信息。<strong>检查点表示日志已经刷新到磁盘的位置，它在分布式系统中主要用于故障恢复。</strong> kafka在启动时会创建日志管理类，读取检查点文件，并把每一个分区的检查点作为日志恢复点，最后创建分区对应的日志实例。</p>
+<p>消息每次传输给broker, 如果直接写入到kafka日志，并刷新到硬盘中会影响性能。kafka在写日志是利用了操作系统底层原理，先将日志写入到操作系统的页面缓存中，提高了日志的写IO，因为写入页面缓存比写入磁盘文件快。当如果没有及时将页面缓存内容刷新到磁盘上，消息节点崩溃了，就会导致数据丢失。。</p>
+<p>有两种策略可以将日志刷写到磁盘上：时间策略和大小策略。</p>
+<ul>
+<li>对于<strong>时间策略</strong>而言，日志管理器启动时会启动定时器，定时调度flushDirtyLogs方法，每隔log.flush.interval.ms将页面缓存中的数据真正刷写到磁盘上。</li>
+<li>对于<strong>大小策略</strong>，但超过一个阈值后，仅有新消息产生的时候才有机会调用flush()方法刷新页面缓存到磁盘。</li>
+</ul>
+<h2 id="2-5-日志压缩和清理"><a href="#2-5-日志压缩和清理" class="headerlink" title="2.5 日志压缩和清理"></a>2.5 日志压缩和清理</h2><p>当日志分段总大小大于阈值log.retention.bytes时，日志管理器会定时清理旧的日志分段，日志的清理有两种策略：</p>
+<ul>
+<li>清理(delete):超过日志的阈值或时间，直接物理删除整个日志分段。</li>
+<li>压缩(compact): 不直接删除日志分段，而是采用合并压缩方式。</li>
+</ul>
+<h3 id="日志压缩"><a href="#日志压缩" class="headerlink" title="日志压缩"></a>日志压缩</h3><p>日志追加的方式可以提高了性能，但不能直接更新。因此需要才有追加方式去更新，但是追加方式到时文件变大，其次就是同一条消息存储在多个位置。针对这个问题，<strong>kafka对日志文件进行压缩，通过后台的压缩操作，使得相同键的多条记录经过合并之后保留最新的一条记录</strong>。</p>
+<p>如图所示，9条消息被压缩后，过滤其重复key的消息, 最终得到6条：<br><img src="/images/15244037838933.jpg" alt=""></p>
+<p>日志压缩是基于每条记录的细粒度日志保留策略，如果相同键有新的记录，则有选择性地删除旧的记录，保证至少每个键都保存有最新的一条记录。除了当前活动的日志分段，会对其他所有的日志分段进行日志压缩，这样可以不影响写操作性能。日志压缩会将所有旧日志的消息复制到新的日志分段上。为了降低复制过程中的内存开销，kafka在压缩日志之前，将日志按照清理点分成日志尾部和头部。</p>
+<p><img src="/images/15244042056787.jpg" alt=""></p>
+<ol>
+<li>日志压缩前，日志分段中的每条消息的偏移量和写入时总是保持一致。</li>
+<li>日志压缩后，消息的物理位置发生了变化。因为生成了新的日志分段，分段中每条消息的物理位置会重新按照新文件组织。</li>
+<li>日志压缩后，日志分段的偏移量不在连续，但不影响查询。</li>
+</ol>
+<h3 id="日志删除"><a href="#日志删除" class="headerlink" title="日志删除"></a>日志删除</h3><p>删除日志的实现思路是将当前最新的日志大小减去下一个即将删除的日志分段大小，如果其阈值超过阈值(log.retention.bytes)则允许删除下一个日志分段；如果小于则不会删除。如图是设置阈值为1G的删除过程:<br><img src="/images/15244056409707.jpg" alt=""></p>
+<p>kafka有个后台清理线程会定时清理日志，每次让日志管理器选择一个最需要清理的日志，清理线程每次只会清理一个日志。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    入境繁华
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/" title="Kafka源码解析(6)--控制器的实现原理">http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码解析/" rel="tag"># 源码解析</a>
+          
+            <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/22/kafka/kafka源码解析(6)--控制器实现原理/" rel="next" title="Kafka源码解析(6)--控制器的实现原理">
+                <i class="fa fa-chevron-left"></i> Kafka源码解析(6)--控制器的实现原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/"
+     data-title="Kafka源码解析(6)--控制器的实现原理"
+     data-content=""
+     data-url="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/"
+           data-title="Kafka源码解析(6)--控制器的实现原理" data-url="http://zhengjianglong.cn/2018/04/22/kafka/kafka源码解析(7)--存储器的实现原理/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/author.jpeg"
+                alt="入境繁华" />
+            
+              <p class="site-author-name" itemprop="name">入境繁华</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/JohnZhengHub" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/2711026835/profile?topnav=1&wvr=6" target="_blank" title="weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/ru-jing-fan-hua" target="_blank" title="zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhengjianglong@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://luodw.cc/" title="罗道文的博客" target="_blank">罗道文的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://youbingchenyoubing.leanote.com/" title="陈友兵的博客" target="_blank">陈友兵的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://arebya.github.io/" title="施亚的博客" target="_blank">施亚的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://rannn.cc/" title="陶然的博客" target="_blank">陶然的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一-概述"><span class="nav-number">1.</span> <span class="nav-text">一. 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二-日志存储"><span class="nav-number">2.</span> <span class="nav-text">二. 日志存储</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-分区副本存储节点分配"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 分区副本存储节点分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-存储结构"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 存储结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-写日志"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 写日志</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-读日志"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 读日志</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#采用文件通道实现了零拷贝传输"><span class="nav-number">2.4.1.</span> <span class="nav-text">采用文件通道实现了零拷贝传输</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-日志管理"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 日志管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-日志压缩和清理"><span class="nav-number">2.6.</span> <span class="nav-text">2.5 日志压缩和清理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#日志压缩"><span class="nav-number">2.6.1.</span> <span class="nav-text">日志压缩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#日志删除"><span class="nav-number">2.6.2.</span> <span class="nav-text">日志删除</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">入境繁华</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"jaylonzheng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("83pavVlI9KtTV5H0NspTyEn7-gzGzoHsz", "7MniqoeFo7WOp06lmwzbhnyS");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
