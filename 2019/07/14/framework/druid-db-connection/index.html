@@ -117,12 +117,12 @@
 <meta property="og:site_name" content="入境繁华">
 <meta property="og:description" content="连接是一种昂贵资源，每次创建销毁需要开销。Druid 可以看做一家 数据库连接池的租赁公司，负责租赁连接，出租给需要的用户，用户使用完成就返还给 Druid。用户就不用关心连接池的创建和销毁细节。因为资源有限 Druid 只能维持有限的连接数量。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/images/15630744255031.jpg">
-<meta property="og:updated_time" content="2019-07-14T03:28:00.515Z">
+<meta property="og:image" content="http://zhengjianglong.cn/images/15630744255031.jpg">
+<meta property="og:updated_time" content="2019-07-14T03:31:35.095Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Druid剖析(2)--数据库连接池实现原理">
 <meta name="twitter:description" content="连接是一种昂贵资源，每次创建销毁需要开销。Druid 可以看做一家 数据库连接池的租赁公司，负责租赁连接，出租给需要的用户，用户使用完成就返还给 Druid。用户就不用关心连接池的创建和销毁细节。因为资源有限 Druid 只能维持有限的连接数量。">
-<meta name="twitter:image" content="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/images/15630744255031.jpg">
+<meta name="twitter:image" content="http://zhengjianglong.cn/images/15630744255031.jpg">
 
 
 
@@ -433,7 +433,7 @@
 <li>连接池数量最大不能超过 maxActive. </li>
 <li>最小连接数不能低于 minIdle.</li>
 </ul>
-<p><img src="images/15630744255031.jpg" alt=""></p>
+<p><img src="/images/15630744255031.jpg" alt=""></p>
 <ul>
 <li>用户通过DruidDataSource 去获取和回收连接。</li>
 <li>获取连接时首先判断连接池是否有可用连接，如果有直接从conecets 尾部获取一个。否则发送empty 信号告诉 CreateConenctionThread 创建连接，并挂起等待，直到有新的连接。</li>
