@@ -112,14 +112,14 @@
 <meta name="description" content="数据库连接是一种关键的有限的昂贵的资源，对数据库连接的管理能显著影响到整个应用程序的伸缩性和健壮性，影响到程序的性能指标。数据库连接池正是针对这个问题提出来的。数据库连接池负责分配、管理和释放数据库连接，它允许应用程序重复使用一个现有的数据库连接，而不是再重新建立一个；释放空闲时间超过最大空闲时间的数据库连接来避免因为没有释放数据库连接而引起的数据库连接遗漏。这项技术能明显提高对数据库操作的性能。">
 <meta name="keywords" content="Druid">
 <meta property="og:type" content="article">
-<meta property="og:title" content="druid剖析(1)--初始 druid">
+<meta property="og:title" content="Druid剖析(1)--初始 druid">
 <meta property="og:url" content="http://zhengjianglong.cn/2019/06/16/framework/acquaintance-druid/index.html">
 <meta property="og:site_name" content="入境繁华">
 <meta property="og:description" content="数据库连接是一种关键的有限的昂贵的资源，对数据库连接的管理能显著影响到整个应用程序的伸缩性和健壮性，影响到程序的性能指标。数据库连接池正是针对这个问题提出来的。数据库连接池负责分配、管理和释放数据库连接，它允许应用程序重复使用一个现有的数据库连接，而不是再重新建立一个；释放空闲时间超过最大空闲时间的数据库连接来避免因为没有释放数据库连接而引起的数据库连接遗漏。这项技术能明显提高对数据库操作的性能。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-06-16T01:36:53.827Z">
+<meta property="og:updated_time" content="2019-07-14T03:25:08.444Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="druid剖析(1)--初始 druid">
+<meta name="twitter:title" content="Druid剖析(1)--初始 druid">
 <meta name="twitter:description" content="数据库连接是一种关键的有限的昂贵的资源，对数据库连接的管理能显著影响到整个应用程序的伸缩性和健壮性，影响到程序的性能指标。数据库连接池正是针对这个问题提出来的。数据库连接池负责分配、管理和释放数据库连接，它允许应用程序重复使用一个现有的数据库连接，而不是再重新建立一个；释放空闲时间超过最大空闲时间的数据库连接来避免因为没有释放数据库连接而引起的数据库连接遗漏。这项技术能明显提高对数据库操作的性能。">
 
 
@@ -156,7 +156,7 @@
 
 
 
-  <title>druid剖析(1)--初始 druid | 入境繁华</title>
+  <title>Druid剖析(1)--初始 druid | 入境繁华</title>
   
 
 
@@ -300,7 +300,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">druid剖析(1)--初始 druid</h1>
+          <h1 class="post-title" itemprop="name headline">Druid剖析(1)--初始 druid</h1>
         
 
         <div class="post-meta">
@@ -335,8 +335,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/测试框架/" itemprop="url" rel="index">
-                    <span itemprop="name">测试框架</span>
+                  <a href="/categories/框架/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
                   </a>
                 </span>
 
@@ -362,7 +362,7 @@
 
           
           
-             <span id="/2019/06/16/framework/acquaintance-druid/" class="leancloud_visitors" data-flag-title="druid剖析(1)--初始 druid">
+             <span id="/2019/06/16/framework/acquaintance-druid/" class="leancloud_visitors" data-flag-title="Druid剖析(1)--初始 druid">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -458,9 +458,6 @@
 </thead>
 <tbody>
 <tr>
-<td>主要功能对比(是否支持)</td>
-</tr>
-<tr>
 <td>LRU</td>
 <td>是</td>
 <td>否</td>
@@ -469,6 +466,7 @@
 <td>是</td>
 <td>是</td>
 <td>？</td>
+<td></td>
 </tr>
 <tr>
 <td>PSCache</td>
@@ -491,6 +489,7 @@
 <td>否</td>
 <td>否</td>
 <td>否</td>
+<td></td>
 </tr>
 <tr>
 <td>ExceptionSorter</td>
@@ -511,6 +510,7 @@
 <td>否</td>
 <td>?</td>
 <td>是</td>
+<td></td>
 </tr>
 <tr>
 <td>设计思路</td>
@@ -541,6 +541,7 @@
 <td></td>
 <td></td>
 <td>差，高并发下出错</td>
+<td></td>
 <td></td>
 <td></td>
 </tr>
@@ -595,7 +596,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://zhengjianglong.cn/2019/06/16/framework/acquaintance-druid/" title="druid剖析(1)--初始 druid">http://zhengjianglong.cn/2019/06/16/framework/acquaintance-druid/</a>
+    <a href="http://zhengjianglong.cn/2019/06/16/framework/acquaintance-druid/" title="Druid剖析(1)--初始 druid">http://zhengjianglong.cn/2019/06/16/framework/acquaintance-druid/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -635,6 +636,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/07/14/framework/druid-db-connection/" rel="prev" title="Druid剖析(2)--数据库连接池实现原理">
+                Druid剖析(2)--数据库连接池实现原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -653,7 +658,7 @@
     <div class="post-spread">
       
         <div class="ds-share flat" data-thread-key="2019/06/16/framework/acquaintance-druid/"
-     data-title="druid剖析(1)--初始 druid"
+     data-title="Druid剖析(1)--初始 druid"
      data-content=""
      data-url="http://zhengjianglong.cn/2019/06/16/framework/acquaintance-druid/">
   <div class="ds-share-inline">
@@ -684,7 +689,7 @@
   
     <div class="comments" id="comments">
       <div class="ds-thread" data-thread-key="2019/06/16/framework/acquaintance-druid/"
-           data-title="druid剖析(1)--初始 druid" data-url="http://zhengjianglong.cn/2019/06/16/framework/acquaintance-druid/">
+           data-title="Druid剖析(1)--初始 druid" data-url="http://zhengjianglong.cn/2019/06/16/framework/acquaintance-druid/">
       </div>
     </div>
 
@@ -740,7 +745,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -751,7 +756,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

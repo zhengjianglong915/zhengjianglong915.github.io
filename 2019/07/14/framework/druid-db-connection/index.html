@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+  
+  
+  <link rel="stylesheet" media="all" href="/lib/Han/dist/han.min.css?v=3.3">
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Druid" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="连接是一种昂贵资源，每次创建销毁需要开销。Druid 可以看做一家 数据库连接池的租赁公司，负责租赁连接，出租给需要的用户，用户使用完成就返还给 Druid。用户就不用关心连接池的创建和销毁细节。因为资源有限 Druid 只能维持有限的连接数量。">
+<meta name="keywords" content="Druid">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Druid剖析(2)--数据库连接池实现原理">
+<meta property="og:url" content="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/index.html">
+<meta property="og:site_name" content="入境繁华">
+<meta property="og:description" content="连接是一种昂贵资源，每次创建销毁需要开销。Druid 可以看做一家 数据库连接池的租赁公司，负责租赁连接，出租给需要的用户，用户使用完成就返还给 Druid。用户就不用关心连接池的创建和销毁细节。因为资源有限 Druid 只能维持有限的连接数量。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/images/15630744255031.jpg">
+<meta property="og:updated_time" content="2019-07-14T03:28:00.515Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Druid剖析(2)--数据库连接池实现原理">
+<meta name="twitter:description" content="连接是一种昂贵资源，每次创建销毁需要开销。Druid 可以看做一家 数据库连接池的租赁公司，负责租赁连接，出租给需要的用户，用户使用完成就返还给 Druid。用户就不用关心连接池的创建和销毁细节。因为资源有限 Druid 只能维持有限的连接数量。">
+<meta name="twitter:image" content="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/images/15630744255031.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/"/>
+
+
+
+
+
+  <title>Druid剖析(2)--数据库连接池实现原理 | 入境繁华</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">入境繁华</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">不积跬步无以至千里</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="入境繁华">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/author.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="入境繁华">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Druid剖析(2)--数据库连接池实现原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-14T11:17:43+08:00">
+                2019-07-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/框架源码/" itemprop="url" rel="index">
+                    <span itemprop="name">框架源码</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/07/14/framework/druid-db-connection/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/07/14/framework/druid-db-connection/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2019/07/14/framework/druid-db-connection/" class="leancloud_visitors" data-flag-title="Druid剖析(2)--数据库连接池实现原理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+               <!-- 连接是一种昂贵资源，每次创建销毁需要开销。Druid 可以看做一家 数据库连接池的租赁公司，负责租赁连接，出租给需要的用户，用户使用完成就返还给 Druid。用户就不用关心连接池的创建和销毁细节。因为资源有限 Druid 只能维持有限的连接数量。 文章中删除 -->
+                 
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>与其他连接池不同，druid没有一个专门的连接池类，比如ConnnetPool。druid的连接池都交给了DruidDataSource负责管理，用数据connects存放连接。本文将介绍 Druid 是如何维护这个连接池，如何完成连接的获取和回收。</p>
+<p>连接是一种昂贵资源，每次创建销毁需要开销。Druid 可以看做一家 数据库连接池的租赁公司，负责租赁连接，出租给需要的用户，用户使用完成就返还给 Druid。用户就不用关心连接池的创建和销毁细节。因为资源有限 Druid 只能维持有限的连接数量。</p>
+<h1 id="一-数据结构"><a href="#一-数据结构" class="headerlink" title="一.数据结构"></a>一.数据结构</h1><p>首先看druid 是通过怎样的数据结构存储连接：</p>
+<p>​<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">​<span class="comment">//连接池</span></span><br><span class="line"><span class="keyword">private</span> DruidConnectionHolder[] connections = <span class="keyword">new</span> DruidConnectionHolder[maxActive]; </span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span>   poolingCount  = <span class="number">0</span>; <span class="comment">// 当前连接池中数据库连接的数量</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span>   activeCount   = <span class="number">0</span>; <span class="comment">// 正在使用的连接数量</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 线程之间的通讯</span></span><br><span class="line"><span class="keyword">protected</span> Condition  notEmpty;</span><br><span class="line"><span class="keyword">protected</span> Condition  empty;</span><br><span class="line"><span class="keyword">protected</span> ReentrantLock  lock; <span class="comment">// 保证现在安全</span></span><br></pre></td></tr></table></figure></p>
+<p>connections 存放着当前可用的所有连接，但这些连接不是 druid 的所有连接，druid 还有一部分连接可能正在被使用，这部分可能就租给用户使用了。connections 存放的是一个代理类，将连接做一层包装。在代理类中可以做很多事情，比如监控拦截、统计等。同时在执行 close 时不直接关闭，可以在这里做资源回收操作。</p>
+<ul>
+<li>poolingCount 是当前可用连接数量，即存放在 connections 中的链接数量。</li>
+<li>activeCount 是当前正在被使用的连接数量，这部分已经被用户拿去使用还没归还。</li>
+</ul>
+<p>poolingCount + activeCount 的数量才是 druid 拥有的所有连接数量。</p>
+<p>这里为什么可用使用数组结构存储呢？ 数据库连接池在初始化时就已经指定了可分配连接的最大数量 maxActive，因此存储空间是固定的。</p>
+<p>Druid 还有三个重要的属性：</p>
+<ul>
+<li>notEmpty： 不为空通知。用来通知其他线程池已经有可用连接。如果没有连接了 notEmpty 上等待，将线程挂起，等待数据库连接；当有新的连接的时候就 通过 notEmpty 进行通知广播等待的线程</li>
+<li>empty：  空通知。 用来通知其他线程目前没有可用连接，通知创建新连接。创建线程在 empty 上等待，发现有empty 信号时就会去创建连接。</li>
+<li>lock： 是一把全局锁，为了保证在多线程环境下对 connections、poolingCount、activeCount 操作的数据一致性。因此在涉及到这些参数变化的地方都使用这边锁。</li>
+</ul>
+<h1 id="二-核心逻辑"><a href="#二-核心逻辑" class="headerlink" title="二. 核心逻辑"></a>二. 核心逻辑</h1><p>DruidDataSource 是数据库连接池的核心部分，可以看做是 Druid 连接池租赁公司的老板。 这家公司创立之初，老板会去中招聘其他三位核心成员:</p>
+<ul>
+<li>创建连接池线程 CreateConnectionThread。主要职责就是创建连接，当连接不够的时候都是交给他创建，满足用户对连接的需求。</li>
+<li>销毁连接线程  DestroyConnectionThread。 主要职责线程池的销毁，将一些空闲连接、不健康连接清除，维持一个最小空闲连接数。</li>
+<li>日志线程 LogStatsThread。 可以看做公司的财务，每隔一段时间记录连接的消费和使用细节。</li>
+</ul>
+<p>DruidDataSource 在初始化的时候就 创建以上三个线程。初始化时还会做以下几个事情：</p>
+<ul>
+<li>将 connections 初始化，大小设置为 maxActive。 一旦创建好以后就不能发生变化了，连接最大数量不能改变。</li>
+<li>根据用户配置的 minActive 数量初始化连接，这样启动以后就有直接可用的连接。为了提高启动速度也可以将这个初始化工作进行异步化（druid.asyncInit 参数设置为true即可）。</li>
+</ul>
+<p>在介绍公司是如何运作之前，需要简单介绍在 druid 中几个永恒的准则。</p>
+<ul>
+<li>连接池数量最大不能超过 maxActive. </li>
+<li>最小连接数不能低于 minIdle.</li>
+</ul>
+<p><img src="images/15630744255031.jpg" alt=""></p>
+<ul>
+<li>用户通过DruidDataSource 去获取和回收连接。</li>
+<li>获取连接时首先判断连接池是否有可用连接，如果有直接从conecets 尾部获取一个。否则发送empty 信号告诉 CreateConenctionThread 创建连接，并挂起等待，直到有新的连接。</li>
+<li>CreateConenctionThread 创建连接完成后，发起 notEmpty 通知等待线程。 等待线程恢复，并从connects 尾部获取连接。</li>
+<li>DestroyConnectionThread 负责收缩连接池，如果连接数量小于 minIdle 则通知 CreateConnectionThread.</li>
+<li>LogStatsThread 则负责记录日志。</li>
+</ul>
+<h2 id="DruidDataSource"><a href="#DruidDataSource" class="headerlink" title="DruidDataSource"></a>DruidDataSource</h2><h3 id="获取连接"><a href="#获取连接" class="headerlink" title="获取连接"></a>获取连接</h3><p>当用户需要连接时，调用 dataSource#getConnection 方法。 DruidDataSource 首先需要判断当前线程池是否有可用的连接，如果有可用的连接则采用LRU策略获取，直接从 connections 尾部获取一个连接返回。 尾部的连接是当前连接池中最活跃的连接，要么是刚刚释放回去的连接，要么就是新创建的。 因此最大程度保证连接是可用的，健康的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">decrementPoolingCount();</span><br><span class="line">DruidConnectionHolder last = connections[poolingCount];</span><br><span class="line">​</span><br></pre></td></tr></table></figure>
+<p>如果当前连接池没有可用的连接，那么首先会发一个信号告诉 CreateConnectionThread 去创建新的连接，然后将自己挂起直到有新的可用连接。新的连接会从两个地方获得，一个是 CreateConnectionThread，一个是刚刚回收的连接。</p>
+<p>​<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">emptySignal(); <span class="comment">// send signal to CreateThread create connection</span></span><br><span class="line">notEmpty.await(); <span class="comment">// signal by recycle or creator</span></span><br><span class="line">​</span><br></pre></td></tr></table></figure></p>
+<p>获取连接的时候提供了两种等待方式：</p>
+<ul>
+<li>getConnection() 进行无限等待, 直到有连接以后才返回。 这种会导致业务方无限等待。</li>
+<li>getConnection(nanos) 指定时间等待，如果在指定时间没有可用连接则直接返回。</li>
+</ul>
+<p>连接从连接池中获取，有的连接在连接池中存放很久可能已经失去活性不能使用。因此在 druid 中支持连接获取后对连接校验的能力。 只要配置 testOnBorrow=true 并且配置 validationQuery即可， druid 连接活性校验方式实际上是通过执行sql 方式来验证，直接执行配置的 validationQuery 。 </p>
+<p>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rset = stmt.executeQuery(validationQuery);</span><br></pre></td></tr></table></figure></p>
+<p>​<br>如果没有配置 testOnBorrow， druid 也支持在获取连接以后对于空闲很久的连接做检查，可以通过testWhileIdle开关设置。如果连接的空闲时间大于 timeBetweenEvictionRunsMillis， 则执行 validationQuery 检查连接的可用性。对于不可用的连接进行销毁，并再次获取新的连接。可以通过这些方式尽可能让连接处于活跃、健康状态。</p>
+<h3 id="回收连接"><a href="#回收连接" class="headerlink" title="回收连接"></a>回收连接</h3><p>用户使用的Connection 是代理代理类 DruidConnectionHolder， 在执行 close 时不是直接将连接关闭，而是将连接回收。</p>
+<p>回收时同时也支持对连接做个检查，将健康的连接存入到连接池。默认不检查，可以通过配置 testOnReturn=true， 则会执行 validationQuery 来检查连接是否可用。如果不可用则不回收，并销毁。回收的连接放在connects 末尾，存放完毕后发发一个 notEmpty 通知，通知正在等待连接的线程。</p>
+<h2 id="CreateConnectionThread"><a href="#CreateConnectionThread" class="headerlink" title="CreateConnectionThread"></a>CreateConnectionThread</h2><p>如名字所示，这个主要是一个负责创建连接。 不是时刻都在创建连接，当没有可用连接时，用户线程进入等待挂起状态，并且连接数量小于maxActive 时才创建连接，否则就偷懒睡觉。在他的世界里准守以下两个规则：</p>
+<p>必须是存在线程等待(有用户获取连接时，此刻没有连接在排队等待，后文会介绍)，才会去创建连接。 否则挂起线程睡眠等待。<br>​<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">// 必须存在线程等待，才创建连接</span></span><br><span class="line"><span class="keyword">if</span> (poolingCount &gt;= notEmptyWaitThreadCount <span class="comment">// </span></span><br><span class="line">    &amp;&amp; (!(keepAlive &amp;&amp; activeCount + poolingCount &lt; minIdle))</span><br><span class="line">    &amp;&amp; !isFailContinuous()</span><br><span class="line">   ) &#123;</span><br><span class="line">    empty.await();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>​<br>如果当前连接数量小于 maxActive 才去创建，否则挂起睡眠等待。<br>​<br>​<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 防止创建超过maxActive数量的连接</span></span><br><span class="line"><span class="keyword">if</span> (activeCount + poolingCount &gt;= maxActive) &#123;</span><br><span class="line">    empty.await();</span><br><span class="line">    <span class="keyword">continue</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>​<br>如果以上两个规则满足了，则会去创建连接。创建连接的底层使用 JDBC 这一套逻辑, 利用Driver 和配置信息连接到数据库：</p>
+<p>​<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">conn = getDriver().connect(url, info);</span><br><span class="line">​</span><br></pre></td></tr></table></figure></p>
+<p>创建完的连接直接存在 connections 末尾，并发一个notEmpty信号告诉所有在等待的线程。等待线程则从睡眠中恢复，再尝试去获取连接。</p>
+<h2 id="DestroyConnectionThread"><a href="#DestroyConnectionThread" class="headerlink" title="DestroyConnectionThread"></a>DestroyConnectionThread</h2><p>该线程主要工作是将空闲及无效的连接销毁。 默认情况下每1000ms 执行一次，可以通过timeBetweenEvictionRunsMillis 时间设置执行间隔。 这里使用的是 最近最久未使用策略进行回收。创建连接和获取连接的时候都是从 connects 尾部获取，尾部连接相对活跃，而头部的连接可能长时间未被使用，相对而言活性更低。因此每次回收都是从connects 头部开始遍历，主要回收几类连接：</p>
+<p>连接的空闲时间大于 maxEvictableIdleTimeMillis， 则进行回收。<br>大于minIdle 部分的连接会被回收。 保证连接池空闲连接不会太多。如果连接池中有大于 minIdle 的连接，说明当前连接池不是很繁忙，因此可以清理。如果为了避免频繁销毁和关闭连接，建议设置 minIdle。<br>检查连接活跃度，不健康的连接则关闭。默认不检查，可以通过 druid.keepAlive 打开连接的健康检查，当开关打开以后，如果空闲时间超过 keepAliveBetweenTimeMills 则会判断连接的健康情况(默认 keepAliveBetweenTimeMills 是 2 分钟)。 这种在网络不稳定的场景下可以使用，利用 DestroyConnectionThread 的定时机制去检查连接状态，保证连接池连接的健康。 </p>
+<p>经过以上的情况，连接数量可能会小于 minIdle，则不能维持线程平衡。 那么就需要发送信号 emptySignal 通知创建连接线程去创建新的连接。</p>
+<h2 id="LogStatsThread"><a href="#LogStatsThread" class="headerlink" title="LogStatsThread"></a>LogStatsThread</h2><p>和公司中的会计一样负责记账，主要负责实施记录 Druid的开销情况，包括当前连接池数量、activeCount、这期间关闭的连接数量等等。 LogStatsThread 按配置的timeBetweenLogStatsMillis 的周期时间，定期执行。 如果 timeBetweenLogStatsMillis 没有配置，则该线程将不会被开启。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    入境繁华
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/" title="Druid剖析(2)--数据库连接池实现原理">http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Druid/" rel="tag"># Druid</a>
+          
+            <a href="/tags/数据库/" rel="tag"># 数据库</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/16/framework/acquaintance-druid/" rel="next" title="Druid剖析(1)--初始 druid">
+                <i class="fa fa-chevron-left"></i> Druid剖析(1)--初始 druid
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <div class="ds-share flat" data-thread-key="2019/07/14/framework/druid-db-connection/"
+     data-title="Druid剖析(2)--数据库连接池实现原理"
+     data-content=""
+     data-url="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/">
+  <div class="ds-share-inline">
+    <ul  class="ds-share-icons-16">
+
+      <li data-toggle="ds-share-icons-more"><a class="ds-more" href="javascript:void(0);">分享到：</a></li>
+      <li><a class="ds-weibo" href="javascript:void(0);" data-service="weibo">微博</a></li>
+      <li><a class="ds-qzone" href="javascript:void(0);" data-service="qzone">QQ空间</a></li>
+      <li><a class="ds-qqt" href="javascript:void(0);" data-service="qqt">腾讯微博</a></li>
+      <li><a class="ds-wechat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+
+    </ul>
+    <div class="ds-share-icons-more">
+    </div>
+  </div>
+</div>
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2019/07/14/framework/druid-db-connection/"
+           data-title="Druid剖析(2)--数据库连接池实现原理" data-url="http://zhengjianglong.cn/2019/07/14/framework/druid-db-connection/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/author.jpeg"
+                alt="入境繁华" />
+            
+              <p class="site-author-name" itemprop="name">入境繁华</p>
+              <p class="site-description motion-element" itemprop="description">不积跬步无以至千里</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/JohnZhengHub" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/2711026835/profile?topnav=1&wvr=6" target="_blank" title="weibo">
+                      
+                        <i class="fa fa-fw fa-globe"></i>weibo</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/ru-jing-fan-hua" target="_blank" title="zhihu">
+                      
+                        <i class="fa fa-fw fa-globe"></i>zhihu</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:zhengjianglong@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://luodw.cc/" title="罗道文的博客" target="_blank">罗道文的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://youbingchenyoubing.leanote.com/" title="陈友兵的博客" target="_blank">陈友兵的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://arebya.github.io/" title="施亚的博客" target="_blank">施亚的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://rannn.cc/" title="陶然的博客" target="_blank">陶然的博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一-数据结构"><span class="nav-number">1.</span> <span class="nav-text">一.数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二-核心逻辑"><span class="nav-number">2.</span> <span class="nav-text">二. 核心逻辑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DruidDataSource"><span class="nav-number">2.1.</span> <span class="nav-text">DruidDataSource</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获取连接"><span class="nav-number">2.1.1.</span> <span class="nav-text">获取连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回收连接"><span class="nav-number">2.1.2.</span> <span class="nav-text">回收连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CreateConnectionThread"><span class="nav-number">2.2.</span> <span class="nav-text">CreateConnectionThread</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DestroyConnectionThread"><span class="nav-number">2.3.</span> <span class="nav-text">DestroyConnectionThread</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LogStatsThread"><span class="nav-number">2.4.</span> <span class="nav-text">LogStatsThread</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">入境繁华</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"jaylonzheng"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("83pavVlI9KtTV5H0NspTyEn7-gzGzoHsz", "7MniqoeFo7WOp06lmwzbhnyS");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
